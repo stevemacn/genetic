@@ -48,9 +48,12 @@ int random(int size){
 void populating() {
 	for( int x =0; x<POPULATION; ++x){
 		for (int y =0; y<ELEMENTS; ++y){
-			population[x][y]=term[random(sizeof(term)/sizeof(*term))]; //populating the array from term
-			++y;
-			population[x][y]=ope[random(sizeof(ope)/sizeof(*ope))]; //populating the array from ope
+			if( y%2==0){
+				population[x][y]=term[random(sizeof(term)/sizeof(*term))];
+			}
+			else{
+				population[x][y]=ope[random(sizeof(ope)/sizeof(*ope))];
+			}
 		}
 	}
 }
@@ -72,10 +75,14 @@ void mutation(int victim){
 	int mutation_rate=575; //some random number
 	int randValue;
 	for(int x=0; x<ELEMENTS; ++x){
-		randValue=random(1000); //assignment random number to this varible
-		if( randValue==mutation_rate){
-
-
+		randValue=random(1000); //assignment random number to this variable
+		if( randValue==mutation_rate){ //if it meet the mutation_rate then mutate
+			if( x%2==0){
+				population[victim][x]=term[random(sizeof(term)/sizeof(*term))];
+			}
+			else{
+				population[victim][x]=ope[random(sizeof(ope)/sizeof(*ope))];
+			}
 		}
 	}
 }
