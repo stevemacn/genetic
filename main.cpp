@@ -25,6 +25,7 @@ double fitness_map[2][CHECK_POINTS];
 
 
 /********************************************************Things need to keep track of**********************************************/
+double value_at_check_point[POPULATION][CHECK_POINTS] ={0}; //need to get the value every time the elements mutate or crossover;
 double fitness_level[POPULATION]={0};
 double total_fintess=0;
 //double array for the initial population
@@ -105,9 +106,16 @@ void total_fitness(){
 	}
 }
 
-//check fitness
+//check fitness - highest fit will result in 0, since it's the difference between the prefered graph and populated graphs
 void check_fitness(){
 	
+	for(int x=0;x<POPULATION;++x){
+		//return fitness level of each population
+		for (int y=0; y<CHECK_POINTS; ++y){
+			fitness_level[x] += abs(fitness_map[1][y]-value_at_check_point[y]); //average out the all the vaule at check points.
+		}
+		fitness_level[x] = fitness_level[x]/CHECK_POINTS;
+	}
 }
 
 int main(){
