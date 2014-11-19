@@ -87,8 +87,16 @@ void mutation(int victim){
 	}
 }
 
+//calculate total fitness
+void total_fitness(){
+	for(int x= 0; x<population; ++x){
+		total_fitness+=fitness_level[x];
+	}
+}
+
 //check fitness
 void check_fitness(){
+	
 }
 
 int main(){
@@ -104,7 +112,7 @@ int main(){
 	mutation(mom);
 	mutation(dad);
 	check_fitness();
-
+	total_fitness();
 	//go back to the start
 	getchar();
 }
