@@ -61,6 +61,17 @@ void populating() {
 //roulette wheel
 int roulette_wheel(){
 	int selected;
+	double fSlice = ;
+	doubel cfTotal 0.0;
+	
+	for(int x=0; x<population; ++x){
+		cfTotal+=fitness_level[x];
+		
+		if (cfTotal>fSlice){
+			selected=x;
+			break;
+		}
+	}
 
 	return selected;
 }
@@ -103,7 +114,7 @@ int main(){
 
 	int mom, dad;
 	populating();
-	populating_check();
+	populating_check(); //populate fitness map
 
 	//start
 	mom=roulette_wheel();
