@@ -122,7 +122,7 @@ void check_fitness(){
 		}
 		fitness_level[x] = fitness_level[x]/CHECK_POINTS;
 		
-		fitness_level[x]=100-abs(fitness_level[x]);
+		fitness_level[x]=100-abs(fitness_level[x]); //in case of negative number the result will be greater than 100 if not absolute
 		if(fitness_level[x]<0){
 			fitness_level[x]=0.0;
 		}
