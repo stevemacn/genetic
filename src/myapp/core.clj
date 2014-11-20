@@ -15,9 +15,9 @@
 
 (defroutes myapp
   (GET "/" [] (fn [req] (d3-page)))
-  (GET "/hello" [] "Hello World"))
-
-
+  (GET "/hello" [] "Hello World")
+  (cpj.route/files "/" {:root "public"})
+  (cpj.route/not-found "Page not found"))
 
 (defn -main [& args]
   (run-server myapp {:port 5000}))
