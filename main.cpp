@@ -45,6 +45,11 @@ int random(int size){
 	return rand()%size;
 }
 
+double random_double(double size){
+	return rand()%size;
+}
+
+
 //populating the array population
 void populating() {
 	for( int x =0; x<POPULATION; ++x){
@@ -61,19 +66,19 @@ void populating() {
 
 //roulette wheel
 int roulette_wheel(){
-	int selected;
-	double fSlice = ;
-	doubel cfTotal 0.0;
+	int selected=0;
+	double fSlice = random_double(total_fintess);
 	
-	for(int x=0; x<population; ++x){
-		cfTotal+=fitness_level[x];
-		
-		if (cfTotal>fSlice){
-			selected=x;
-			break;
+	
+	while (fSlice>0){
+		if(selected <POPULATION){
+			fSlice = fSlice - fitness_level[selected];
+			++selected;
 		}
+		else{
+			break;
+		]
 	}
-
 	return selected;
 }
 
