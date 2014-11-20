@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
+#include <ctime>
 using namespace std;
 
 /**************************************Variables need to be predetermined********************************************************/
@@ -77,7 +78,7 @@ int roulette_wheel(){
 		}
 		else{
 			break;
-		]
+		}
 	}
 	return selected;
 }
@@ -129,7 +130,7 @@ void check_fitness(){
 }
 
 int main(){
-
+	srand(time(0));
 	int mom, dad;
 	populating();
 	populating_check(); //populate fitness map
