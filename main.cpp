@@ -120,6 +120,11 @@ void check_fitness(){
 			fitness_level[x] += abs(fitness_map[1][y]-value_at_check_point[y]); //average out the all the vaule at check points.
 		}
 		fitness_level[x] = fitness_level[x]/CHECK_POINTS;
+		
+		fitness_level[x]=100-fitness_level[x];
+		if(fitness_level[x]<0){
+			fitness_level[x]=0.0;
+		}
 	}
 }
 
