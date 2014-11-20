@@ -9,4 +9,6 @@ are written entirely in clojure.
 
 ##Setup and run
 
-    lein ring server-headless
+    lein run -m myapp.core
+
+Then navigate your browser to localhost:5000 to see some graphs
