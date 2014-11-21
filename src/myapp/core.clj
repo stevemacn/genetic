@@ -7,15 +7,20 @@
 (defn d3-page []
   (hiccup/html
     [:head
-      [:title "Equation fitter"]]
+      [:title "Equation fitter"]
+      [:link {:href "/main.css"}]
+    ]
     [:body
-      [:div {:id "goalGraph"}]
+      [:div {:class "graph" :id "goalGraph"}]
+      [:div {:class "graph" :id "bestGraph"}]
+      [:div {:class "graph" :id "worstGraph"}]
       [:script {:src "http://d3js.org/d3.v3.min.js"}]
       [:script {:src "/linegraph.js" }]]))
 
 (defroutes myapp
+  ;render our graphs
   (GET "/" [] (fn [req] (d3-page)))
-  (GET "/hello" [] "Hello World")
+  ;static routes
   (cpj.route/files "/" {:root "public"})
   (cpj.route/not-found "Page not found"))
 
