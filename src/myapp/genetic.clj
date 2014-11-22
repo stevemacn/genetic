@@ -13,12 +13,12 @@
   ;(# (nth '(#'cosx #'sinx) ind) val)
   (cond
     ;(= 0 ind) val
-    ;(= (contains? (range 0 9) val)) val
-    (= 0 ind) (randomFloat val)                             ;this will actual print any number
+    (= (contains? (range 0 9) val)) val
+    ;(= 0 ind) (randomFloat val)                             ;this will actual print any number
     (= 1 ind) (Math/cos val)
     (= 2 ind) (Math/sin val)
-    ;(= 3 ind) (/ val 10)
-    )
+    (= 3 ind) (/ val 10)                                    ;decimal
+    ))
 
 ;reuse power code from clojure pract project (TCO)
 (defn power-tco [c, a]
