@@ -28,7 +28,7 @@ double fitness_map[2][CHECK_POINTS];
 /********************************************************Things need to keep track of**********************************************/
 double value_at_check_point[POPULATION][CHECK_POINTS] ={0}; //need to get the value every time the elements mutate or crossover;
 double fitness_level[POPULATION]={0};
-double total_fintess=0;
+double total_fitness=0;
 //double array for the initial population
 string population[POPULATION][ELEMENTS];
 
@@ -46,9 +46,6 @@ int random(int size){
 	return rand()%size;
 }
 
-double random_double(double size){
-	return rand()%size;
-}
 
 
 //populating the array population
@@ -68,7 +65,7 @@ void populating() {
 //roulette wheel
 int roulette_wheel(){
 	int selected=0;
-	double fSlice = random_double(total_fintess);
+	double fSlice = random(total_fitness);
 	
 	
 	while (fSlice>0){
@@ -85,7 +82,13 @@ int roulette_wheel(){
 
 //crossover
 void crossover(int mom, int dad){
-
+	int crossoverRate = random(ELEMENTS);
+	for(int x=0; x<crossoverRate; ++x){
+		string temp;
+		temp=population[dad][x];
+		population[dad][x]=population[mom][x];
+		population[mom][x]=temp;
+	}
 }
 
 //mutation
@@ -106,9 +109,9 @@ void mutation(int victim){
 }
 
 //calculate total fitness
-void total_fitness(){
-	for(int x= 0; x<population; ++x){
-		total_fitness+=fitness_level[x];
+void cal_total_fitness(){
+	for(int x= 0; x<POPULATION; ++x){
+		total_fitness=total_fitness+fitness_level[x];
 	}
 }
 
@@ -118,7 +121,7 @@ void check_fitness(){
 	for(int x=0;x<POPULATION;++x){
 		//return fitness level of each population
 		for (int y=0; y<CHECK_POINTS; ++y){
-			fitness_level[x] += abs(fitness_map[1][y]-value_at_check_point[y]); //average out the all the vaule at check points.
+			fitness_level[x] += abs(fitness_map[1][y]-value_at_check_point[x][y]); //average out the all the vaule at check points.
 		}
 		fitness_level[x] = fitness_level[x]/CHECK_POINTS;
 		
@@ -142,7 +145,7 @@ int main(){
 	mutation(mom);
 	mutation(dad);
 	check_fitness();
-	total_fitness();
+	cal_total_fitness();
 	//go back to the start
 	getchar();
 }
