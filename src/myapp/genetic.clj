@@ -3,6 +3,12 @@
 ;(defn cosx [x] (Math/cos x))
 ;(defn sinx [x] (Math/sin x))
 
+;constant data
+(def POPULATION 5)
+(def MEMBERS 9)                                            ;number of term and operator combine must be odd number
+(def CHECK_POINTS 10)
+
+
 ;random float
 (defn randomFloat [x]
       (rand x)
