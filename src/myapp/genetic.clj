@@ -5,13 +5,12 @@
 
 ;constant data
 (def POPULATION 5)
-(def MEMBERS 9)                                            ;number of term and operator combine must be odd number
+(def MEMBERS 9)                                             ;number of term and operator combine must be odd number
 (def CHECK_POINTS 10)
-
 
 ;random float
 (defn randomFloat [x]
-      (rand x)
+  (rand x)
   )
 
 (defn get-term [val, ind]
@@ -34,7 +33,7 @@
       (= e 1) b
       :else (recur (* b c) (- e 1)))))
 
-  ;list of possible operators
+;list of possible operators
 (defn get-operand [val1 val2 ind]
   (cond
     (= 0 ind) (* val1 val2)
@@ -43,19 +42,25 @@
     (= 3 ind) (- val1 val2)
     (= 4 ind) (power-tco val1 val2)))
 
-;initialize (generate random points, generate random population)
-
-;create-population - yi
-
-
 (defn check-fitness-rec [termop xind]
+  (if (or (empty? xind) (empty? termop))
+    0                                                       ;find a better error message
+    (let [size (count termop) first-x (first xind) rest-terms (rest termop)]
+      (cond
+        (= size 1) (get-term (first termop) first-x)
+        (get-operand
+          (get-term (first termop) first-x)                 ;first term
+          (check-fitness-rec (rest rest-terms) (rest xind)) ;second term
+          (first rest-terms)                                ;operand
+          )))
+    )
   ;if (first | second | termopRest)
   ;get-operand(get-term(a, firstXind) (check-fitness-rec termopRest xindRest)
   )
 
 ;convert to TCO
 (defn check-fitness [termOps]
-  (check-fitness-rec termOps (get-xindex))  ;loop recur
+  (check-fitness-rec termOps (get-xindex))                  ;loop recur
   )
 
 
