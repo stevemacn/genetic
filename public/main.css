@@ -1,2 +1,12 @@
+.xaxis {
+    fill:slategray;
+}
 
+.yaxis {
+    fill:slategray;
+}
 
+.graphcontainer {
+    float:left;
+    margin-left:25px;
+}
