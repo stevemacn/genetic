@@ -13,7 +13,24 @@
     (= 2 ind) (Math/sin val)
     (= 3 ind) (/ val 10))
 
+;reuse power code from clojure pract project (TCO)
+(defn power-tco [c, a]
+  (loop [b c e a]
+    (cond
+      (= e 0) 1
+      (= e 1) b
+      :else (recur (* b c) (- e 1)))))
 
+
+(defn get-operand [val1 val2 ind]
+  (cond
+    (= 0 ind) (* val1 val2)
+    (= 1 ind) (/ val1 val2)
+    (= 2 ind) (+ val1 val2)
+    (= 3 ind) (- val1 val2)
+    (= 4 ind) (power-tco val1 val2)
+    )
+)
 
 ;list of possible operators
 
