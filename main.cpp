@@ -19,7 +19,7 @@ using namespace std;
 
 //all the items that will be in the function to get graphs.
 const string ope[] = {"+","-","*","/","^"};
-const string term[] = {"cosx","sinx","x","0","1""2","3","4","5","6","7","8","9",".1"".2",".3",".4",".5",".6",".7",".8",".9"};
+const string term[] = {"cosx","sinx","x","0","1""2","3","4","5","6","7","8","9",".1",".2",".3",".4",".5",".6",".7",".8",".9"};
 
 //populating the fitness array from the graph we are comparing to fitness_map[pos][value]
 double fitness_map[2][CHECK_POINTS];
@@ -43,7 +43,12 @@ void populating_check(){
 
 //random generator - take the size as input produce result vary from 0 to (size-1)
 int random(int size){
-	return rand()%size;
+	if(size==0){
+		return 0;
+	}
+	else {
+		return rand()%size;
+	}
 }
 
 
@@ -125,7 +130,7 @@ void check_fitness(){
 		}
 		fitness_level[x] = fitness_level[x]/CHECK_POINTS;
 		
-		fitness_level[x]=100-abs(fitness_level[x]); //in case of negative number the result will be greater than 100 if not absolute
+		fitness_level[x]=100-fitness_level[x];
 		if(fitness_level[x]<0){
 			fitness_level[x]=0.0;
 		}
