@@ -1,11 +1,9 @@
 (ns myapp.core
+  (:use [myapp.genetic :as genetic])
   (:require [compojure.core :refer :all]
             [compojure.route :as cpj.route]
             [hiccup.core :as hiccup]
             [org.httpkit.server :refer [run-server]])) ; httpkit is a server
-
-(defn get-data [] "input=[1,2,3,4,5,6,7,8,9,10]; arr=[];
- for (i in input) arr.push(Math.cos(i)); console.log(arr)")
 
 (defn d3-page []
   (hiccup/html
@@ -14,7 +12,7 @@
       [:link {:rel "stylesheet" :type "text/css" :href "/main.css"}]
     ]
     [:body
-      [:script (get-data)]
+      [:script (genetic/get-data)]
       [:div {:class "graphcontainer"}
        [:div {:class "graph" :id "goalGraph"}]
        [:h1  "Goal graph"]
