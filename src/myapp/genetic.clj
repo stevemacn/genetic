@@ -21,21 +21,38 @@
       (= e 1) b
       :else (recur (* b c) (- e 1)))))
 
-
+  ;list of possible operators
 (defn get-operand [val1 val2 ind]
   (cond
     (= 0 ind) (* val1 val2)
     (= 1 ind) (/ val1 val2)
     (= 2 ind) (+ val1 val2)
     (= 3 ind) (- val1 val2)
-    (= 4 ind) (power-tco val1 val2)
-    )
-)
-
-;list of possible operators
+    (= 4 ind) (power-tco val1 val2)))
 
 ;initialize (generate random points, generate random population)
-;((nth [#'sin, #'cos] 0) 0)
+
+;create-population - yi
+
+
+(defn check-fitness-rec [termop xind]
+  ;if (first | second | termopRest)
+  ;get-operand(get-term(a, firstXind) (check-fitness-rec termopRest xindRest)
+  )
+
+;convert to TCO
+(defn check-fitness [termOps]
+  (check-fitness-rec termOps (get-xindex))  ;loop recur
+  )
+
+
+(defn intitialize []
+  ;(create-population)
+  ;loop-recur
+  ;(map check-fitness newpopulation)
+  ;
+  )
+
 
 ;TCO loop to create new populations
 ;calculate member fitness
