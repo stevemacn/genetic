@@ -68,12 +68,22 @@
                      (check-fitness-rec (rest rest-terms) x-value) ;second term
                      (first rest-terms)                     ;operand
                      )))))
+;refactor check-fitness-rec to assemble equations
 
-;convert to TCO
-;map curried function (partials?)
-(defn check-fitness [termOps x-values y-values]
 
-  (reduce + (apply check-fitness-rec termOps x-values))
+;map (use pmap?) curried fx with population member for each x input
+(defn compute-y [termop x-values]
+  (map #(check-fitness-rec termop %) x-values))
+
+(defn compute-errors [termop x-values y-values]
+  (map #(Math/abs %) (map - (compute-y termop x-values) y-values))
+
+  ;(println (map check-fitness-rec termOps x-values))
+
+  ;(println (map (partial check-fitness-rec termOps) x-values))
+  ;(map check-fitness termOps (iterate first x-values))
+  ;(apply check-fitness-rec termops x-values)
+  ;(reduce + (apply check-fitness-rec termOps x-values))
 
   ;for each value of x. can use a reduce to sum the errors (error of zero being perfect match).
   ;each check fit can be called asynchronously with sum as an accumulator (Cale))
@@ -81,12 +91,12 @@
   )
 
 ;maybe returns a tuple(total-error, population-member)
-(defn grade-equations [x y population-member]
+;(defn grade-equations [x y population-member]
   ;sum all the errors for each x value
-  (reduce + (map check-fitness population-member))
+; (reduce + (map check-fitness population-member))
   ;map partials check-fitness needs (pop member and x values)
   ;so we are mapping (check-fitness pop member) for each x value
-  )
+; )
 
 ;defn grade-equations [x,y,population-member]
 
