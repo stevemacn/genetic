@@ -83,25 +83,20 @@
 (defn sum-errors [termop x-values y-values]
   (reduce + (compute-errors termop x-values y-values)))
 
+;returns the fitness scores for each member of the population as a list.
 (defn grade-population [population x-values y-values]
   (map #(sum-errors % x-values y-values) population))
 
-;maybe returns a tuple(total-error, population-member)
-;(defn grade-equations [x y population-member]
-  ;sum all the errors for each x value
-; (reduce + (map check-fitness population-member))
-  ;map partials check-fitness needs (pop member and x values)
-  ;so we are mapping (check-fitness pop member) for each x value
-; )
+;create new generation from parents
+(defn cross-over [mother father])
 
-;defn grade-equations [x,y,population-member]
-
-;(reduce + (map check-fitness x))
-
+;randomly mutate member of the population
+(defn mutation [member])
+;we need to map this to the whole population (map mutation population)
 
 ;recursively iterates through the populations - should be a generator
 ;so given a population and goal (y) it should continue for number-generations
-;and then return the current best species
+;and then return the current best species to be visualized in D3
 ;@number-generations - the number of times to recurse
 (defn iterate-generation [number-generations x y population]
   (println x)
