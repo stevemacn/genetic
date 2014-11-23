@@ -1,4 +1,3 @@
-
 (ns myapp.genetic)
 
 ;(defn cosx [x] (Math/cos x))
@@ -11,7 +10,7 @@
 
 ;get x number of input values to map to the random output (points to check).
 (defn get-xindex [number step max]
-    (take number (range 0 max step)))
+  (take number (range 0 max step)))
 
 ;get NUMBER random values up to MAX (used for random values and random population[where x<4])
 (defn get-random [number max]
@@ -24,14 +23,19 @@
     (cons (get-random MEMBERS 3) (get-population (dec size)))
     ))
 
+;need to be able to choose actual values not just return the value!
 (defn get-term [val, ind]
   ;(apply (nth '(#'cosx) 0) 0)
   ;(# (nth '(#'cosx #'sinx) ind) val)
   (cond
-    (= 0 ind) val
-    (= 1 ind) (Math/cos val)
-    (= 2 ind) (Math/sin val)
-    (= 3 ind) (/ val 10)                                    ;decimal
+    (= 0 ind) val                                           ;x
+    (= 1 ind) (Math/cos val)                                ;cosx
+    (= 2 ind) (Math/sin val)                                ;sinx
+    (= 3 ind) (Math/log val)                                ;logx
+    (= 12 ind) 0.25                                         ;fractional constants
+    (= 13 ind) 0.5
+    (= 14 ind) 0.75
+    :else (- ind 2)                                         ;constants (2-9) - some #{} is "contains?"
     ))
 
 ;reuse power code from clojure pract project (TCO)
@@ -51,91 +55,76 @@
     (= 3 ind) (- val1 val2)
     (= 4 ind) (power-tco val1 val2)))
 
-
+;going to take a fair amount to rewrite this using TCO (should be recursing on op not final term).
 ;returns the equation-calculated value of y for an x value. (needs to be fixed currently looking at array of x not 1 x)
-(defn check-fitness-rec [termop xind]
+(defn check-fitness-rec [termop x-value]
   (if (empty? termop)
     0                                                       ;find a better error message
-    (let [size (count termop) first-x (first xind) rest-terms (rest termop)]
+    (let [size (count termop) rest-terms (rest termop)]
       (if
-        (= size 1) (get-term (first termop) first-x)
+        (= size 1) (get-term x-value (first termop))
                    (get-operand
-                     (get-term (first termop) first-x)                 ;first term
-                     (check-fitness-rec (rest rest-terms) (rest xind)) ;second term
-                     (first rest-terms)                                ;operand
+                     (get-term x-value (first termop))      ;first term
+                     (check-fitness-rec (rest rest-terms) x-value) ;second term
+                     (first rest-terms)                     ;operand
                      )))))
 
 ;convert to TCO
 ;map curried function (partials?)
-(defn check-fitness [termOps]
+(defn check-fitness [termOps x-values y-values]
+
+  (reduce + (apply check-fitness-rec termOps x-values))
+
   ;for each value of x. can use a reduce to sum the errors (error of zero being perfect match).
   ;each check fit can be called asynchronously with sum as an accumulator (Cale))
   ; (check-fitness-rec termOps (get-xindex))                  ;loop recur
   )
 
-;actual return statement to javascript so that we can visualize the graph
-(defn print-population [equation data-values xind]
-
-  ;"randomData = [{x:1,y:3},{x:2,y:7},{x:3,y:1}] function equation(x) { return cos(x)+5*x^2 }
-  (str "randomData=" data-values ";" "xind=" xind "; function equation(x) { return" "Math.cos(x)+3*x^2" "}")
-  "Math.cos(x)+3*x^2"                                       ;this is x
-
+;maybe returns a tuple(total-error, population-member)
+(defn grade-equations [x y population-member]
+  ;sum all the errors for each x value
+  (reduce + (map check-fitness population-member))
+  ;map partials check-fitness needs (pop member and x values)
+  ;so we are mapping (check-fitness pop member) for each x value
   )
 
-;maybe returns a tuple(total-error, population-member)
 ;defn grade-equations [x,y,population-member]
-  ;sum all the errors for each x value
-  ;(reduce + (map check-fitness x))
+
+;(reduce + (map check-fitness x))
 
 
 ;recursively iterates through the populations - should be a generator
 ;so given a population and goal (y) it should continue for number-generations
 ;and then return the current best species
 ;@number-generations - the number of times to recurse
-;(defn iterate [number-generations x y population]
-;
-; grade-equation[x y population]
-; sort (tuples from grade-equation)
-; cross over and mutations
-; iterate((dec number-generations) x y new-population) ;where new pop comes from mutations/crossover fitness etc.
-; )
+(defn iterate-generation [number-generations x y population]
+  (println x)
+  (println y)
+  (println population)
 
+  ; grade-equation[x y population]
+  ; sort (tuples from grade-equation)
+  ; cross over and mutations
+  ; iterate((dec number-generations) x y new-population) ;where new pop comes from mutations/crossover fitness etc.
+  )
 
-(defn intitialize []
+(defn initialize []
   ;random points (x,y) where x is spaced out and y is random
-  (let [x (get-xindex CHECK_POINTS 1 10)                    ;get (1,2,3,4,5,6,7,8,9)
-        y (get-random CHECKPOINTS 100)                      ;get 10 random numbers
+  (let [x (get-xindex CHECK_POINTS 1 10)                    ;get (0,1,2,3,4,5,6,7,8,9)
+        y (get-random CHECK_POINTS 100)                     ;get 10 random numbers
         initial-population (get-population POPULATION)
         ]
 
-        ;(grade-equations x y initial-population)
+    ;100 is sort of a random number of generations but just as a place-holder
+    (iterate-generation 100 x y initial-population)
+    ))
 
-    )
-
-  ;loop-recur
-  ;(map check-fitness newpopulation)
-  ;
+;actual return statement to javascript so that we can visualize the graph
+(defn print-population [equation data-values xind]
+  ;"randomData = [{x:1,y:3},{x:2,y:7},{x:3,y:1}] function equation(x) { return cos(x)+5*x^2 }
+  (str "randomData=" data-values ";" "xind=" xind "; function equation(x) { return" "Math.cos(x)+3*x^2" "}")
+  "Math.cos(x)+3*x^2"                                       ;this is x
   )
-
-;setting up the structure of list of list and pass to initialize
-(defn populating []
-  (def members `(0))
-  ;repeat
-  (dotimes [x (- ELEMENTS 1)] (def members (conj members 0)))
-  (def popul (list members))
-  ;repeat
-  (dotimes [y (- POPULATION 1)] (def popul (conj popul members)))
-  )
-
-;access the lis of list call popul
-(defn access [x y]
-  (nth (nth popul x) y)
-  )
-
-;TCO loop to create new populations
-;calculate member fitness
-;cross-over
-;mutate
 
 ;generator or all at once? we only support one user - so could be saved in memory.
 (defn get-data [] "input=[1,2,3,4,5,6,7,8,9,10]; arr=[];
