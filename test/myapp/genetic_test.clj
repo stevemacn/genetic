@@ -35,14 +35,23 @@
 
 (deftest test-map-errors
   (testing "Determining errors between computed y and actual y"
-
-    (println (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18)))
     (is (= '(0 0 0 0 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18))))
+    (is (= '(0 0 2 1 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18)))) ;+2 +1
     (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
     (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
+  ))
+
+;sums the test-map-errors to receive fitness score (0 is best)
+(deftest test-member-error-score
+  (testing "Sum error scores for each member"
+    (is (= 0 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18))))
+    (is (= 3 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
+    (is (= 1 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
+    (is (= 1 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
   ))
 
 (end-to-end)
 (test-fitness)
 (test-computed-y-values)
 (test-map-errors)
+(test-member-error-score)
