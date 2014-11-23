@@ -72,6 +72,22 @@
   )
 
 
+;setting up the structure of list of list and pass to initialize
+(defn populating []
+      (def members `(0))
+      ;repeat
+      (dotimes [x (- ELEMENTS 1)] (def members (conj members 0)))
+      (def popul (list members))
+      ;repeat
+      (dotimes [y (- POPULATION 1)] (def popul (conj popul members)))
+      )
+
+;access the lis of list call popul
+(defn access [x y]
+      (nth (nth popul x) y)
+      )
+
+
 ;TCO loop to create new populations
 ;calculate member fitness
 ;cross-over
