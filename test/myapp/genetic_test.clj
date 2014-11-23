@@ -48,6 +48,16 @@
     (is (= 3 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
     (is (= 1 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
     (is (= 1 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
+
+    ;x+x*x = x^2+x
+    (is (= 0 (myapp.genetic/sum-errors '(0 2 0 0 0) '(1 2 3 4 5 6) '(2 6 12 20 30 42))))
+    ;1+(1*1)=2, 2+(2*2)=6, 3+(3*3)=12, 4+(4*4)=20, 5+(5*5)=30, 6+(6*6)=42, series is incr by previous incr + 2
+  ))
+
+(deftest test-population-fitness
+  (testing "Computing fitness (sum of error) for each member of a population"
+    ;(2 6 12 20 30 42), (3 6 9 12 15 18) so errors are (1 0 1 7 15 24), (0 0 2 1 0 0) so sum errors is (48), (3)
+    (is (= '(48 3) (myapp.genetic/grade-population '((0 2 0 0 0 ) (0 2 0 2 0)) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
   ))
 
 (end-to-end)
@@ -55,3 +65,4 @@
 (test-computed-y-values)
 (test-map-errors)
 (test-member-error-score)
+(test-population-fitness)

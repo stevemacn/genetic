@@ -83,6 +83,9 @@
 (defn sum-errors [termop x-values y-values]
   (reduce + (compute-errors termop x-values y-values)))
 
+(defn grade-population [population x-values y-values]
+  (map #(sum-errors % x-values y-values) population))
+
 ;maybe returns a tuple(total-error, population-member)
 ;(defn grade-equations [x y population-member]
   ;sum all the errors for each x value
