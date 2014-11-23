@@ -70,7 +70,6 @@
                      )))))
 ;refactor check-fitness-rec to assemble equations
 
-
 ;map (use pmap?) curried fx with population member for each x input
 (defn compute-y [termop x-values]
   (map #(check-fitness-rec termop %) x-values))
@@ -88,20 +87,64 @@
   (map #(sum-errors % x-values y-values) population))
 
 ;create new generation from parents
+;may want to investigate multiple types of crossover (single point, multiple point, uniform)
 (defn cross-over [mother father])
 
 ;randomly mutate member of the population
 (defn mutation [member])
 ;we need to map this to the whole population (map mutation population)
 
+;arithmetic, heurstic crossover
+(defn pair-parents [mom dad]
+
+  )
+
+;creates a list of sorted tuples of the population (score, member)
+(defn sort-population-tuples [scored-population population]
+  (let [population-tuples (map list scored-population population) half (/ (count population) 2)]
+    ;return the better half or ???
+    0
+    ;(take half (iterate max population-tuples))
+    ;(sort-by first population-tuples) CRAZY SLOW! What can we do instead?
+    ))
+
+;tournament select, roulette?, fitness proportionate
+;currently stochastic
+;how is this returning new data
+(defn population-select [population x-values y-values]
+  (let [scored-population (grade-population population x-values y-values)]
+    (sort-population-tuples scored-population population)
+    ;we now have sorted population tuples which can be crossed and mutated.
+
+    ;remove index for scored-population
+    ;get corresponding pop value (remove him too).
+    ;create new members
+    ;concat new members with rest of scored population.
+
+  ))
+
+  ;get random value
+  ;(let [size (- (count population) 1)]
+  ;(let [index1 (random-int size) index2 (random-int size)]
+  ;(if (= index1 index2)
+  ; (pair-parents (nth population index1) (nth population (- index1 1)))
+  ; (pair-parents (nth population index1) (nth population index2))
+  ;))))
+
 ;recursively iterates through the populations - should be a generator
 ;so given a population and goal (y) it should continue for number-generations
 ;and then return the current best species to be visualized in D3
 ;@number-generations - the number of times to recurse
-(defn iterate-generation [number-generations x y population]
-  (println x)
-  (println y)
+(defn iterate-generation [number-generations x-values y-values population]
+  (println x-values)
+  (println y-values)
   (println population)
+
+  ;(if (= number-generations 0)
+  ; (print-population population)                           ;highest ranked member (sorted by rank?)
+  ;refactor to loop - recur
+  ; (iterate-generation (dec number-generations) x-values y-values (population-select population x-values y-values))
+  ;)
 
   ; grade-equation[x y population]
   ; sort (tuples from grade-equation)
