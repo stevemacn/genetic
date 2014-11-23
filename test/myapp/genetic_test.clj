@@ -27,12 +27,22 @@
     (is (= 2.6327476856711183  (myapp.genetic/check-fitness-rec '(5 0 1) 0.5))) ;3 * cosx = 2.63
   ))
 
-(deftest test-member-fitness
-  (testing "Member fitness"
-   (println (myapp.genetic/check-fitness '(0 1 0 1 0) '(1 2 3 4 5 6) '(12 7 5 3 2 6)) )
+(deftest test-computed-y-values
+  (testing "Comute y-values"
+    (is (= '(3 6 9 12 15 18) (myapp.genetic/compute-y '(0 2 0 2 0) '(1 2 3 4 5 6))))
+    (is (= '(3 15 30 45 60 75) (myapp.genetic/compute-y '(0 2 0 2 0) '(1 5 10 15 20 25))))
+  ))
 
-    ))
+(deftest test-map-errors
+  (testing "Determining errors between computed y and actual y"
+
+    (println (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18)))
+    (is (= '(0 0 0 0 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18))))
+    (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
+    (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
+  ))
 
 (end-to-end)
 (test-fitness)
-(test-member-fitness)
+(test-computed-y-values)
+(test-map-errors)
