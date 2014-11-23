@@ -75,20 +75,13 @@
 (defn compute-y [termop x-values]
   (map #(check-fitness-rec termop %) x-values))
 
+;create a vector of absolute errors between each computed y and actual y
 (defn compute-errors [termop x-values y-values]
-  (map #(Math/abs %) (map - (compute-y termop x-values) y-values))
+  (map #(Math/abs %) (map - (compute-y termop x-values) y-values)))
 
-  ;(println (map check-fitness-rec termOps x-values))
-
-  ;(println (map (partial check-fitness-rec termOps) x-values))
-  ;(map check-fitness termOps (iterate first x-values))
-  ;(apply check-fitness-rec termops x-values)
-  ;(reduce + (apply check-fitness-rec termOps x-values))
-
-  ;for each value of x. can use a reduce to sum the errors (error of zero being perfect match).
-  ;each check fit can be called asynchronously with sum as an accumulator (Cale))
-  ; (check-fitness-rec termOps (get-xindex))                  ;loop recur
-  )
+;returns the fitness score for the termop vector (population member)
+(defn sum-errors [termop x-values y-values]
+  (reduce + (compute-errors termop x-values y-values)))
 
 ;maybe returns a tuple(total-error, population-member)
 ;(defn grade-equations [x y population-member]
