@@ -1,0 +1,38 @@
+(ns myapp.genetic-test
+  (:require [clojure.test :refer :all]
+            [myapp.core :refer :all]))
+
+(deftest end-to-end
+  (testing "End to end testing"
+    (myapp.genetic/initialize)))
+
+(deftest test-fitness
+  (testing "Composition of equations"
+    (println (myapp.genetic/check-fitness-rec '(0 1 0) 1))
+    (myapp.genetic/check-fitness-rec '(0 1 0) 1)
+
+    (is (= 1  (myapp.genetic/check-fitness-rec '(0 1 0) 1) ));x / x = 1
+    (is (= 1  (myapp.genetic/check-fitness-rec '(0 1 0) 2))) ;x / x = 1
+    (is (= 4  (myapp.genetic/check-fitness-rec '(0 2 0) 2))) ;x + x = 4
+    (is (= 6  (myapp.genetic/check-fitness-rec '(0 2 0 2 0) 2))) ;x + x + x = 6
+    (is (= 9  (myapp.genetic/check-fitness-rec '(0 2 0 2 0) 3))) ;x + x + x = 9
+    (is (= 4  (myapp.genetic/check-fitness-rec '(0 2 0 1 0) 3))) ;x + x / x = 4
+    (is (= 12  (myapp.genetic/check-fitness-rec '(0 2 0 0 0) 3))) ;x + x * x = 12
+
+    (is (= 2.6327476856711183  (myapp.genetic/check-fitness-rec '(1 2 1 2 1) 0.5))) ;cosx + cosx + cosx = 2.63
+
+    (is (= 0.8775825618903728  (myapp.genetic/check-fitness-rec '(1) 0.5))) ; cosx = 0.878
+    (is (= 0.5  (myapp.genetic/check-fitness-rec '(13) 0.5))) ; 0.5
+    (is (= 0.4387912809451864  (myapp.genetic/check-fitness-rec '(13 0 1) 0.5))) ; 0.5 * cosx = 2.63
+    (is (= 2.6327476856711183  (myapp.genetic/check-fitness-rec '(5 0 1) 0.5))) ;3 * cosx = 2.63
+  ))
+
+(deftest test-member-fitness
+  (testing "Member fitness"
+   (println (myapp.genetic/check-fitness '(0 1 0 1 0) '(1 2 3 4 5 6) '(12 7 5 3 2 6)) )
+
+    ))
+
+(end-to-end)
+(test-fitness)
+(test-member-fitness)
