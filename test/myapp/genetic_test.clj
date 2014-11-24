@@ -11,15 +11,16 @@
     (println (myapp.genetic/check-fitness-rec '(0 1 0) 1))
     (myapp.genetic/check-fitness-rec '(0 1 0) 1)
 
-    (is (= 1  (myapp.genetic/check-fitness-rec '(0 1 0) 1) ));x / x = 1
-    (is (= 1  (myapp.genetic/check-fitness-rec '(0 1 0) 2))) ;x / x = 1
-    (is (= 4  (myapp.genetic/check-fitness-rec '(0 2 0) 2))) ;x + x = 4
-    (is (= 6  (myapp.genetic/check-fitness-rec '(0 2 0 2 0) 2))) ;x + x + x = 6
-    (is (= 9  (myapp.genetic/check-fitness-rec '(0 2 0 2 0) 3))) ;x + x + x = 9
-    (is (= 4  (myapp.genetic/check-fitness-rec '(0 2 0 1 0) 3))) ;x + x / x = 4
-    (is (= 12  (myapp.genetic/check-fitness-rec '(0 2 0 0 0) 3))) ;x + x * x = 12
+    (is (= 1   (myapp.genetic/check-fitness-rec '(0 2 0) 1) ));x / x = 1
+    (is (= 1   (myapp.genetic/check-fitness-rec '(0 2 0) 2))) ;x / x = 1
+    (is (= 4   (myapp.genetic/check-fitness-rec '(0 1 0) 2))) ;x + x = 4
+    (is (= 6   (myapp.genetic/check-fitness-rec '(0 1 0 1 0) 2))) ;x + x + x = 6
+    (is (= 9   (myapp.genetic/check-fitness-rec '(0 1 0 1 0) 3))) ;x + x + x = 9
+    (is (= 4   (myapp.genetic/check-fitness-rec '(0 1 0 2 0) 3))) ;x + x / x = 4
+    (is (= 12  (myapp.genetic/check-fitness-rec '(0 1 0 0 0) 3))) ;x + x * x = 12
+    (is (= 12  (myapp.genetic/check-fitness-rec '(0 0 0 1 0) 3))) ;x * x + x = 12
 
-    (is (= 2.6327476856711183  (myapp.genetic/check-fitness-rec '(1 2 1 2 1) 0.5))) ;cosx + cosx + cosx = 2.63
+    (is (= 2.6327476856711183  (myapp.genetic/check-fitness-rec '(1 1 1 1 1) 0.5))) ;cosx + cosx + cosx = 2.63
 
     (is (= 0.8775825618903728  (myapp.genetic/check-fitness-rec '(1) 0.5))) ; cosx = 0.878
     (is (= 0.5  (myapp.genetic/check-fitness-rec '(13) 0.5))) ; 0.5
@@ -29,42 +30,43 @@
 
 (deftest test-computed-y-values
   (testing "Comute y-values"
-    (is (= '(3 6 9 12 15 18) (myapp.genetic/compute-y '(0 2 0 2 0) '(1 2 3 4 5 6))))
-    (is (= '(3 15 30 45 60 75) (myapp.genetic/compute-y '(0 2 0 2 0) '(1 5 10 15 20 25))))
+    (is (= '(3 6 9 12 15 18) (myapp.genetic/compute-y '(0 1 0 1 0) '(1 2 3 4 5 6))))
+    (is (= '(3 15 30 45 60 75) (myapp.genetic/compute-y '(0 1 0 1 0) '(1 5 10 15 20 25))))
   ))
 
 (deftest test-map-errors
   (testing "Determining errors between computed y and actual y"
-    (is (= '(0 0 0 0 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18))))
-    (is (= '(0 0 2 1 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18)))) ;+2 +1
-    (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
-    (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
+    (is (= '(0 0 0 0 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18))))
+    (is (= '(0 0 2 1 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18)))) ;+2 +1
+    (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
+    (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
   ))
 
 ;sums the test-map-errors to receive fitness score (0 is best)
 (deftest test-member-error-score
   (testing "Sum error scores for each member"
-    (is (= 0 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18))))
-    (is (= 3 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
-    (is (= 1 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
-    (is (= 1 (myapp.genetic/sum-errors '(0 2 0 2 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
+    (is (= 0 (myapp.genetic/sum-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18))))
+    (is (= 3 (myapp.genetic/sum-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
+    (is (= 1 (myapp.genetic/sum-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
+    (is (= 1 (myapp.genetic/sum-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
 
     ;x+x*x = x^2+x
-    (is (= 0 (myapp.genetic/sum-errors '(0 2 0 0 0) '(1 2 3 4 5 6) '(2 6 12 20 30 42))))
+    (is (= 0 (myapp.genetic/sum-errors '(0 1 0 0 0) '(1 2 3 4 5 6) '(2 6 12 20 30 42))))
     ;1+(1*1)=2, 2+(2*2)=6, 3+(3*3)=12, 4+(4*4)=20, 5+(5*5)=30, 6+(6*6)=42, series is incr by previous incr + 2
   ))
 
 (deftest test-population-fitness
   (testing "Computing fitness (sum of error) for each member of a population"
     ;(2 6 12 20 30 42), (3 6 9 12 15 18) so errors are (1 0 1 7 15 24), (0 0 2 1 0 0) so sum errors is (48), (3)
-    (is (= '(48 3) (myapp.genetic/grade-population '((0 2 0 0 0 ) (0 2 0 2 0)) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
+    (is (= '(48 3) (myapp.genetic/grade-population '((0 1 0 0 0 ) (0 1 0 1 0)) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
     (is (= '(48 3 48 3 48 3 48 3 48 3 48 3) (myapp.genetic/grade-population '(
-         (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0)
-         (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0)
+         (0 1 0 0 0 ) (0 1 0 1 0) (0 1 0 0 0 ) (0 1 0 1 0) (0 1 0 0 0 ) (0 1 0 1 0)
+         (0 1 0 0 0 ) (0 1 0 1 0) (0 1 0 0 0 ) (0 1 0 1 0) (0 1 0 0 0 ) (0 1 0 1 0)
        ) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
 
     ;runs in 0.022 msecs
     ;how to analyze stack size? stable for 540 members
+    #_
     (time (myapp.genetic/grade-population '(
         (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;6
         (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;12
@@ -106,12 +108,36 @@
     (is (= '((1 1 2 2 3) (0 1 0 1 1)) (myapp.genetic/cross '(1 1 2 2 1) '(0 1 0 1 3))))
   ))
 
+;.05 - .08 remove index from list is faster.
+(deftest test-remove-item
+  (testing "removing item from a list"
+    (println "time to remove from list")
+    (time (myapp.genetic/remove-index-from-list 3 '(0 1 2 3 4) ))
+    (time (myapp.genetic/remove-item-by-index 3 '(0 1 2 3 4) ))
+    (is (= '(0 1 2 4) (myapp.genetic/remove-item-by-index 3 '(0 1 2 5 4))))
+    (is (= '(0 1 2 4) (myapp.genetic/remove-index-from-list 3 '(0 1 2 5 4))))
+    ))
 
-#_
+;48 3 48, (0 2 0 0 0) and (0 2 0 2 0) sent to myapp
 (deftest test-crossover
   (testing "check the crossover"
-    (myapp.genetic/cross-over )
+    (println "near end to end testing")
+    ;0 2 0 0 0
+    ;t 0 t 0 t
+    ;0 0 0 2 0
+    (let [population '((0 1 0 0 0) (0 1 0 1 0) (0 0 0 1 0)) xvals '(1 2 3 4 5 6) yvals '(3 6 11 13 15 18)]
+      (println (myapp.genetic/grade-population population xvals yvals))
+      (println (myapp.genetic/cross-over (myapp.genetic/grade-population population xvals yvals) population))
+      (myapp.genetic/cross-over (myapp.genetic/grade-population population xvals yvals) population)
+    )
+    ))
 
+(deftest test-remove-3
+  (testing "removing three from list applying operator and continue"
+
+    (is (= 4 (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 2))) ;2+2
+    (is (= 2 (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 1))) ;1+1
+    (is (= 2 (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 1))) ;
     ))
 
 (end-to-end)
@@ -121,6 +147,8 @@
 (test-member-error-score)
 (test-population-fitness)
 ;(test-tuple-generator)
-;(test-remove-item)
+(test-remove-item)
 (test-cross)
+(test-crossover)
+(test-remove-3)
 ;(estimate-time)
