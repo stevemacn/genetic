@@ -86,9 +86,29 @@
 (defn grade-population [population x-values y-values]
   (map #(sum-errors % x-values y-values) population))
 
+;potentially too slow to use (we can return multiple indexes?)
+(defn remove-item [x xs]
+  (remove #{x} xs))
+
+(defn cross [mom dad]
+  (let [half (+ (/ (count mom) 2) 1)]                       ;two more than half
+    (let [m1 (take half mom) m2 (drop half mom)
+          d1 (take half dad) d2 (drop half dad)]
+      (cons (concat m1 d2) (concat d1 m2)))))
+
 ;create new generation from parents
 ;may want to investigate multiple types of crossover (single point, multiple point, uniform)
-(defn cross-over [mother father])
+(defn cross-over [scored-population population]
+  ;(let [indexes (population-select scored-population)]
+
+  ;(cross
+  ;  (nth (first indexes) population)
+  ;  (nth (second indexes) population)
+  ;
+  ; ))
+  )
+
+
 
 ;randomly mutate member of the population
 (defn mutation [member])
@@ -111,25 +131,25 @@
 ;tournament select, roulette?, fitness proportionate
 ;currently stochastic
 ;how is this returning new data
-(defn population-select [population x-values y-values]
-  (let [scored-population (grade-population population x-values y-values)]
-    (sort-population-tuples scored-population population)
-    ;we now have sorted population tuples which can be crossed and mutated.
+;(defn population-select [population x-values y-values]
+;(let [scored-population (grade-population population x-values y-values)]
+; (sort-population-tuples scored-population population)
+;we now have sorted population tuples which can be crossed and mutated.
 
-    ;remove index for scored-population
-    ;get corresponding pop value (remove him too).
-    ;create new members
-    ;concat new members with rest of scored population.
+;remove index for scored-population
+;get corresponding pop value (remove him too).
+;create new members
+;concat new members with rest of scored population.
+; )
 
-  ))
 
-  ;get random value
-  ;(let [size (- (count population) 1)]
-  ;(let [index1 (random-int size) index2 (random-int size)]
-  ;(if (= index1 index2)
-  ; (pair-parents (nth population index1) (nth population (- index1 1)))
-  ; (pair-parents (nth population index1) (nth population index2))
-  ;))))
+;get random value
+;(let [size (- (count population) 1)]
+;(let [index1 (random-int size) index2 (random-int size)]
+;(if (= index1 index2)
+; (pair-parents (nth population index1) (nth population (- index1 1)))
+; (pair-parents (nth population index1) (nth population index2))
+;))))
 
 ;recursively iterates through the populations - should be a generator
 ;so given a population and goal (y) it should continue for number-generations
