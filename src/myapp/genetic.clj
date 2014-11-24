@@ -94,7 +94,10 @@
   (let [half (+ (/ (count mom) 2) 1)]                       ;two more than half
     (let [m1 (take half mom) m2 (drop half mom)
           d1 (take half dad) d2 (drop half dad)]
-      (cons (concat m1 d2) (concat d1 m2)))))
+      (println (concat d1 m2))
+      (println (concat m1 d2))
+
+      (list (concat m1 d2) (concat d1 m2)))))
 
 ;create new generation from parents
 ;may want to investigate multiple types of crossover (single point, multiple point, uniform)
