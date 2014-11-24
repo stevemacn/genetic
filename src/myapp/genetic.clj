@@ -7,6 +7,7 @@
 (def POPULATION 5)
 (def MEMBERS 9)                                             ;number of term and operator combine must be odd number
 (def CHECK_POINTS 10)
+(def INDEX 0)
 
 ;get x number of input values to map to the random output (points to check).
 (defn get-xindex [number step max]
@@ -178,6 +179,35 @@
 ;we return the randomData we tried to fit
 ;we return the equation we found that most closely fit the data
 
+;correct the value from score-population
+(defn correct-fitness [x]
+      (cond
+        (< 100 x) 0                                             ;if x is greater than 100 result 0
+        (> 0 x) 0                                     ;if x is smaller than 0 result 0
+        :else (- 100 x)
+        )
+      )
+
+;total fitness, should return the sum of score-population
+(defn total-fitness [score-population]
+      (cond
+        (== (count score-population) 0) ()
+        (== (count score-population) 1) (correct-fitness (first score-population))
+        :else (+ (correct-fitness (first score-population)) (total-fitness (rest score-population)))
+        )
+      )
+
+;this function must be called before used of selection function each time
+(def fSlice (rand-int (total-fitness score-population)))
+
+
+;roulette wheel
+(defn selection [score-population index slice]
+      (cond
+        (< slice 0) index
+        :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population))))
+        )
+      )
 
 
 
