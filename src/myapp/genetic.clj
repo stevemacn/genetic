@@ -202,12 +202,14 @@
 ((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))
 
 ;roulette wheel
-(defn selection [score-population index ((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))]
+(defn selection [score-population index slice]
       (cond
         (< slice 0) (- index 1)
         :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population))))
         )
       )
 
-
-
+;function
+(defn selected [score-population]
+      (selection score-population INDEX ((fn [fSlice] (rand-int fSlice)) (total-fitness score-population)))
+      )
