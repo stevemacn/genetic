@@ -58,7 +58,61 @@
   (testing "Computing fitness (sum of error) for each member of a population"
     ;(2 6 12 20 30 42), (3 6 9 12 15 18) so errors are (1 0 1 7 15 24), (0 0 2 1 0 0) so sum errors is (48), (3)
     (is (= '(48 3) (myapp.genetic/grade-population '((0 2 0 0 0 ) (0 2 0 2 0)) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
+    (is (= '(48 3 48 3 48 3 48 3 48 3 48 3) (myapp.genetic/grade-population '(
+         (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0)
+         (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0)
+       ) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
+
+    ;runs in 0.022 msecs
+    ;how to analyze stack size? stable for 540 members
+    (time (myapp.genetic/grade-population '(
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;6
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;12
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;18
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;24
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;30
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;36
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;42
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;48
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;54
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;60
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;66
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;72
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;78
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;84
+        (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) (0 2 0 0 0 ) (0 2 0 2 0) ;90
+      ) '(1 2 3 4 5 6) '(3 6 11 13 15 18)))
+    ))
+
+(deftest test-tuple-generator
+  (testing "Checking that tuples are created from score and population and sorted correctly"
+    (println
+    (is (=
+          '((0 (0 1 0)) (3 (1 0 1)) (22 (2 1 3)))
+          (myapp.genetic/sort-population-tuples '(0 22 3) '((0 1 0) (2 1 3) (1 0 1))))))))
+
+#_
+(deftest test-remove-item
+  (testing "removing item from a list"
+    (time (myapp.genetic/remove-item 3 '(1 2 0 4)))
+    (println (myapp.genetic/remove-item 3 '(1 2 0 4)))      ;searches for item not actual index.
+    ;likely too slow 0.05 - 0.07 msecs
+    ))
+
+;.06 - .09 msec (not significantly slower than remove)
+(deftest test-cross
+  (testing "check crossing two parents"
+    (time (myapp.genetic/cross '(1 1 2 2 3 1) '(1 1 2 2 3 1)))
+    (is (= '((1 1 2 2 3) (0 1 0 1 1)) (myapp.genetic/cross '(1 1 2 2 1) '(0 1 0 1 3))))
   ))
+
+
+#_
+(deftest test-crossover
+  (testing "check the crossover"
+    (myapp.genetic/cross-over )
+
+    ))
 
 (end-to-end)
 (test-fitness)
@@ -66,3 +120,7 @@
 (test-map-errors)
 (test-member-error-score)
 (test-population-fitness)
+;(test-tuple-generator)
+;(test-remove-item)
+(test-cross)
+;(estimate-time)
