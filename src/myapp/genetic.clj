@@ -51,13 +51,17 @@
 (defn get-operand [val1 val2 ind]
   (cond
     (= 0 ind) (* val1 val2)
-    (= 1 ind) (/ val1 val2)
-    (= 2 ind) (+ val1 val2)
+    (= 1 ind) (+ val1 val2)
+    (= 2 ind) (/ val1 val2)
     (= 3 ind) (- val1 val2)
-    (= 4 ind) (power-tco val1 val2)))
+    ;(= 4 ind) (power-tco val1 val2)
+    ))
+
+
 
 ;going to take a fair amount to rewrite this using TCO (should be recursing on op not final term).
 ;returns the equation-calculated value of y for an x value. (needs to be fixed currently looking at array of x not 1 x)
+;not preserving order of operations.
 (defn check-fitness-rec [termop x-value]
   (if (empty? termop)
     0                                                       ;find a better error message
@@ -87,30 +91,68 @@
 (defn grade-population [population x-values y-values]
   (map #(sum-errors % x-values y-values) population))
 
+;correct the value from score-population
+(defn correct-fitness [x]
+  (cond
+    (< 100 x) 0                                             ;if x is greater than 100 result 0
+    (> 0 x) 0                                     ;if x is smaller than 0 result 0
+    :else (- 100 x)
+    )
+  )
+
+;total fitness, should return the sum of score-population
+(defn total-fitness [score-population]
+  (cond
+    (== (count score-population) 0) ()
+    (== (count score-population) 1) (correct-fitness (first score-population))
+    :else (+ (correct-fitness (first score-population)) (total-fitness (rest score-population)))
+    )
+  )
+
+;this function must be called before used of selection function each time
+;(def fSlice (rand-int (total-fitness score-population)))
+;((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))
+
+;roulette wheel
+(defn selection [score-population index slice]
+  (cond
+    (< slice 0) (- index 1)
+    :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population))))
+    )
+  )
+
+;function
+(defn selected [score-population]
+  (selection score-population INDEX ((fn [fSlice] (rand-int fSlice)) (total-fitness score-population)))
+  )
+
 ;potentially too slow to use (we can return multiple indexes?)
-(defn remove-item [x xs]
-  (remove #{x} xs))
+(defn remove-item-by-index [x xs]
+  (remove #{(nth xs x)} xs))
+
+(defn remove-index-from-list [x xs]
+    (let [x1 (+ x 1)]
+      (concat (take x xs) (drop x1 xs))))
 
 (defn cross [mom dad]
   (let [half (+ (/ (count mom) 2) 1)]                       ;two more than half
     (let [m1 (take half mom) m2 (drop half mom)
           d1 (take half dad) d2 (drop half dad)]
-      (println (concat d1 m2))
-      (println (concat m1 d2))
+      (println "crossed1" (concat d1 m2))
+      (println "crossed2" (concat m1 d2))
 
       (list (concat m1 d2) (concat d1 m2)))))
 
 ;create new generation from parents
 ;may want to investigate multiple types of crossover (single point, multiple point, uniform)
-(defn cross-over [scored-population population]
-  ;(let [indexes (population-select scored-population)]
 
-  ;(cross
-  ;  (nth (first indexes) population)
-  ;  (nth (second indexes) population)
-  ;
-  ; ))
-  )
+
+(defn cross-over [scored-population population]
+  (let [index (selected scored-population)]
+    (let [index2 (selected (remove-index-from-list index scored-population))]
+    (cross
+      (nth population index)
+      (nth (remove-index-from-list index population) index2)))))
 
 
 
@@ -201,38 +243,3 @@
 ;sample return value for javascript
 ;we return the randomData we tried to fit
 ;we return the equation we found that most closely fit the data
-
-;correct the value from score-population
-(defn correct-fitness [x]
-      (cond
-        (< 100 x) 0                                             ;if x is greater than 100 result 0
-        (> 0 x) 0                                     ;if x is smaller than 0 result 0
-        :else (- 100 x)
-        )
-      )
-
-;total fitness, should return the sum of score-population
-(defn total-fitness [score-population]
-      (cond
-        (== (count score-population) 0) ()
-        (== (count score-population) 1) (correct-fitness (first score-population))
-        :else (+ (correct-fitness (first score-population)) (total-fitness (rest score-population)))
-        )
-      )
-
-;this function must be called before used of selection function each time
-;(def fSlice (rand-int (total-fitness score-population)))
-;((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))
-
-;roulette wheel
-(defn selection [score-population index slice]
-      (cond
-        (< slice 0) (- index 1)
-        :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population))))
-        )
-      )
-
-;function
-(defn selected [score-population]
-      (selection score-population INDEX ((fn [fSlice] (rand-int fSlice)) (total-fitness score-population)))
-      )
