@@ -60,14 +60,45 @@
 ;combine 3 at index
 ;remove 3 items from the list and apply the operand to these terms. Use the x-value to calculate the terms.
 (defn combine-3-at-index [x xs x-value]
-  (println x xs x-value)
   (let [l1 (take x xs) l2 (drop x xs)]
-    (println l1 l2)
     (let [term1 (last l1) term2  (second l2)]
-      (println term1 term2 (first l2))
-      (println "new list" (concat (butlast l1) (list (get-operand term1 term2 (first l2)))  (drop 2 l2)))
       (concat (butlast l1) (list (get-operand term1 term2 (first l2)))  (drop 2 l2)))))
 
+;from stackoverflow
+(defn indices-of [f coll]
+  (keep-indexed #(if (f %2) %1 nil) coll))
+
+(defn first-index-of [f coll]
+  (first (indices-of f coll)))
+
+(defn find-thing [coll value]
+  (first-index-of #(= % value) coll))
+
+;applies the correct operand in order from the operator list.
+(defn find-apply [termop x-value operator-list]
+  (if (= 0 (count operator-list)) termop
+    (if (= 1 (count termop))
+      termop
+
+      (let [operators (take-nth 2 (rest termop))]
+        (let [mindex (find-thing operators (first operator-list))]
+
+          (if (nil? mindex)
+            (find-apply termop x-value (rest operator-list))
+            (find-apply (combine-3-at-index (+ (* mindex 2) 1) termop x-value) x-value operator-list)
+            )
+          ;(apply operator for all parts and call find-and apply again. )
+          )))))
+
+;modified from stackoverflow to find even
+(defn map-every-nth [f coll n]
+  (map-indexed #(if (zero? (mod %1 2)) (f %2) %2) coll))
+
+;first call (find-and-apply termop x-values '(0 2 3 1)
+;check that it isn't an even value...
+(defn find-and-apply [termop x-value]
+  ;calculate terms ahead of time to speed things up and make things easier
+  (first (find-apply (map-every-nth #(get-term x-value %) termop 2) x-value '(0 2 3 1))) )
 
 ;going to take a fair amount to rewrite this using TCO (should be recursing on op not final term).
 ;returns the equation-calculated value of y for an x value. (needs to be fixed currently looking at array of x not 1 x)
