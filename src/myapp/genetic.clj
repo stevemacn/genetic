@@ -150,7 +150,9 @@
         )
       )
 ;this function must be called before used of selection function each time
-;(def fSlice (rand-int (total-fitness score-population)))
+(defn selected [score-population]
+  (selection score-population INDEX (fSlice score-population))
+  )
 ;((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))
 
 ;roulette wheel
@@ -164,7 +166,7 @@
 
 ;function
 (defn selected [score-population]
-  (selection score-population INDEX ((fn [fSlice] (rand-int fSlice)) (total-fitness score-population)))
+  (selection score-population INDEX (fSlice score-population))
   )
 
 ;potentially too slow to use (we can return multiple indexes?)
