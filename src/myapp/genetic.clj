@@ -155,6 +155,7 @@
 
 ;roulette wheel
 (defn selection [score-population index slice]
+      (println "slice" slice)
       (cond
         (< slice 0) (- index 1)
         :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population) score-population)))
@@ -196,46 +197,39 @@
 
 
 
-;randomly mutate member of the population
-(defn mutation [member])
-;we need to map this to the whole population (map mutation population)
 
-;arithmetic, heurstic crossover
-(defn pair-parents [mom dad]
 
+;check if mutation should occur
+(def mutating?
+  (cond
+    (== (rand-int 1000) MUTRATE) 1
+    :else 0    )
   )
 
-;creates a list of sorted tuples of the population (score, member)
-(defn sort-population-tuples [scored-population population]
-  (let [population-tuples (map list scored-population population) half (/ (count population) 2)]
-    ;return the better half or ???
-    0
-    ;(take half (iterate max population-tuples))
-    ;(sort-by first population-tuples) CRAZY SLOW! What can we do instead?
-    ))
+;mutating a member
+(defn mut [xs]
+  (cond
+    (empty? xs) ()
+    ;term
+    (== (mod (count xs) 2) 1)
+    (cond
+      (== mutating? 1) (cons (rand-int 13) (mut (rest xs)))
+      :else (cons (first xs) (mut (rest xs)))
+      )
+    ;op
+    (== (mod (count xs) 2) 0)
+    (cond
+      (== mutating? 1) (cons (rand-int 3) (mut (rest xs)))
+      :else (cons (first xs) (mut (rest xs)))
+      )
+    )
+  )
 
-;tournament select, roulette?, fitness proportionate
-;currently stochastic
-;how is this returning new data
-;(defn population-select [population x-values y-values]
-;(let [scored-population (grade-population population x-values y-values)]
-; (sort-population-tuples scored-population population)
-;we now have sorted population tuples which can be crossed and mutated.
+;mutating whole population, this is the function will be call after new generate
+;with data size of 20 elements and population of 90 Elapsed time:0.062986 ms
 
-;remove index for scored-population
-;get corresponding pop value (remove him too).
-;create new members
-;concat new members with rest of scored population.
-; )
-
-
-;get random value
-;(let [size (- (count population) 1)]
-;(let [index1 (random-int size) index2 (random-int size)]
-;(if (= index1 index2)
-; (pair-parents (nth population index1) (nth population (- index1 1)))
-; (pair-parents (nth population index1) (nth population index2))
-;))))
+(defn mutate [xss]
+  (map mut xss))
 
 ;recursively iterates through the populations - should be a generator
 ;so given a population and goal (y) it should continue for number-generations
@@ -255,15 +249,16 @@
     (if (= generation 0)
       population                                            ;return max in population.
       (if (= (count new-population) POPULATION)
-        (recur
-          (dec generation)
-          x-values
-          y-values
-          ng
-          (grade-population new-population x-values y-values)
-          population
-          '()
-          )
+        (let [mutants (mutate new-population)]
+          (recur
+            (dec generation)
+            x-values
+            y-values
+            ng
+            (grade-population mutants x-values y-values)
+            mutants
+            '()
+            ))
         ; (iterate-generation (dec ng) x-values y-values new-population)
         (recur
           generation
@@ -311,38 +306,3 @@
 ;sample return value for javascript
 ;we return the randomData we tried to fit
 ;we return the equation we found that most closely fit the data
-
-
-;check if mutation should occur
-(def mutating?
-  (cond
-    (== (rand-int 1000) MUTRATE) 1
-    :else 0    )
-  )
-
-;mutating a member
-(defn mut [xs]
-      (cond
-        (empty? xs) ()
-        ;term
-        (== (mod (count xs) 2) 1)
-        (cond
-          (== mutating? 1) (cons (rand-int 15) (mut (rest xs)))
-          :else (cons (first xs) (mut (rest xs)))
-          )
-        ;op
-        (== (mod (count xs) 2) 0)
-        (cond
-          (== mutating? 1) (cons (rand-int 4) (mut (rest xs)))
-          :else (cons (first xs) (mut (rest xs)))
-          )
-        )
-      )
-
-;mutating whole population, this is the function will be call after new generate
-;with data size of 20 elements and population of 90 Elapsed time:0.062986 ms
-
-(defn mutation [xss]
-      (map mut xss)
-      )
-
