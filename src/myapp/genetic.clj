@@ -157,7 +157,6 @@
           (recur score-population best (rand-int count) (dec chances) current)
           )))))
 
-
 ;potentially too slow to use (we can return multiple indexes?)
 (defn remove-item-by-index [x xs]
   (remove #{(nth xs x)} xs))
@@ -187,16 +186,8 @@
   (if (== (rand-int 100) 1) (add-random x 1) original ))
 
 (defn mutate2a [xss]
-  (map-even #(mutate2 2 %) (map-odd #(mutate2 12 %) xss))
-  )
+  (map-even #(mutate2 2 %) (map-odd #(mutate2 12 %) xss)))
 
-
-;  (map-odd #(add-random 2 %) (map-even #(add-random 13 %) (get-ones MEMBERS 3)))
-
-
-;recursively iterates through the populations - should be a generator
-;so given a population and goal (y) it should continue for number-generations
-;and then return the current best species to be visualized in D3
 ;@number-generations - the number of times to recurse
 (defn iterate-generation [number-generations x-values y-values population]
   (println x-values)
@@ -236,18 +227,7 @@
           scored-population
           population
           (concat (cross-over scored-population population) new-population)
-          ))))
-  ;(if (= number-generations 0)
-  ; (print-population population)                           ;highest ranked member (sorted by rank?)
-  ;refactor to loop - recur
-  ; (iterate-generation (dec number-generations) x-values y-values (population-select population x-values y-values))
-  ;)
-
-  ; grade-equation[x y population]
-  ; sort (tuples from grade-equation)
-  ; cross over and mutations
-  ; iterate((dec number-generations) x y new-population) ;where new pop comes from mutations/crossover fitness etc.
-  )
+          )))))
 
 (defn initialize []
   ;random points (x,y) where x is spaced out and y is random
@@ -255,12 +235,8 @@
         y (get-random CHECK_POINTS 100)                     ;get 10 random numbers
         initial-population (get-population POPULATION)      ; map even cause terms are out of 14 not 3
         ]
-
     ;100 is sort of a random number of generations but just as a place-holder
-    (concat (list  (first (iterate-generation 10 x y initial-population)) )(list x) (list y))
-        ))
-
-
+    (concat (list  (first (iterate-generation 10 x y initial-population)) )(list x) (list y))))
 
 (defn insert-odd [ind]
   (cond
@@ -284,26 +260,7 @@
     ))
 
 (defn print-equation [eq]
- (map-odd #(insert-odd %) (map-even #(insert-even %) eq))
-
-  #_
-  (if (empty? eq)
-    '()
-    (let [feq (first eq)]
-      (cond
-        (= feq 0))
-
-
-      )
-    (cond
-      (= (first eq))
-
-    )
-
-    (str "")
-    )
-
-  )
+ (map-odd #(insert-odd %) (map-even #(insert-even %) eq)))
 
 ;actual return statement to javascript so that we can visualize the graph
 (defn print-population []
@@ -311,16 +268,4 @@
   (let [data (initialize)]
     (println (print-equation (first data)))
     (str "ydata=[" (clojure.string/join "," (nth data 2))  "]; xdata=[" (clojure.string/join "," (second data))
-         "]; function equation(x) { return " (apply str (print-equation (first data)))  "}"))
-
-  ;(str "randomData=" data-values ";" "xind=" xind "; function equation(x) { return" "Math.cos(x)+3*x^2" "}")
-  ;"Math.cos(x)+3*x^2"                                       ;this is x
-  )
-
-;generator or all at once? we only support one user - so could be saved in memory.
-(defn get-data [] "input=[1,2,3,4,5,6,7,8,9,10]; arr=[];
- for (i in input) arr.push(Math.cos(i)); console.log(arr)")
-
-;sample return value for javascript
-;we return the randomData we tried to fit
-;we return the equation we found that most closely fit the data
+         "]; function equation(x) { return " (apply str (print-equation (first data)))  "}")))
