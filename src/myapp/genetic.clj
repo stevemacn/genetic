@@ -8,6 +8,7 @@
 (def MEMBERS 9)                                             ;number of term and operator combine must be odd number
 (def CHECK_POINTS 10)
 (def INDEX 0)
+(def MUTRATE 234)
 
 ;get x number of input values to map to the random output (points to check).
 (defn get-xindex [number step max]
@@ -253,3 +254,11 @@
 ;sample return value for javascript
 ;we return the randomData we tried to fit
 ;we return the equation we found that most closely fit the data
+
+
+;check if mutation should occur
+(def mutating?
+  (cond
+    (== (rand-int 1000) MUTRATE) 1
+    :else 0    )
+  )
