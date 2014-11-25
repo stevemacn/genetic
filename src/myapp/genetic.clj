@@ -10,19 +10,34 @@
 (def INDEX 0)
 (def MUTRATE 234)
 
+;modified from stackoverflow to find even
+(defn map-even [f coll]
+  (map-indexed #(if (zero? (mod %1 2)) (f %2) %2) coll))
+
+(defn map-odd [f coll]
+  (map-indexed #(if (not (zero? (mod %1 2))) (f %2) %2) coll))
+
 ;get x number of input values to map to the random output (points to check).
 (defn get-xindex [number step max]
   (take number (range 0 max step)))
 
 ;get NUMBER random values up to MAX (used for random values and random population[where x<4])
 (defn get-random [number max]
-  (take number (repeatedly #(rand-int max))))
+  (take number (repeatedly #(rand-int 1))))
+
+(defn add-random [x y]
+  (+ (rand-int x) y))
+
+;maps random numbers for terms and operands that within their ranges.
+(defn map-ops-terms [ops terms]
+  (map-odd #(add-random ops %) (map-even #(add-random terms %) (get-random MEMBERS 3))))
+;(map-odd #(add-random 3 %) (map-even #(add-random 13 %) (
 
 ;x is the size of the population
 (defn get-population [size]
   (if (= size 1)
-    (list (get-random MEMBERS 3))
-    (cons (get-random MEMBERS 3) (get-population (dec size)))
+    (list (map-ops-terms 3 13))
+    (cons (map-ops-terms 3 13) (get-population (dec size)))
     ))
 
 ;need to be able to choose actual values not just return the value!
@@ -91,15 +106,11 @@
           ;(apply operator for all parts and call find-and apply again. )
           )))))
 
-;modified from stackoverflow to find even
-(defn map-every-nth [f coll n]
-  (map-indexed #(if (zero? (mod %1 2)) (f %2) %2) coll))
-
 ;first call (find-and-apply termop x-values '(0 2 3 1)
 ;check that it isn't an even value...
 (defn check-fitness [termop x-value]
   ;calculate terms ahead of time to speed things up and make things easier
-  (first (find-apply (map-every-nth #(get-term x-value %) termop 2) x-value '(0 2 3 1))) )
+  (first (find-apply (map-even #(get-term x-value %) termop) x-value '(0 2 3 1))) )
 
 ;map (use pmap?) curried fx with population member for each x input
 (defn compute-y [termop x-values]
@@ -232,8 +243,6 @@
   (println y-values)
   (println population)
 
-
-
   ;(if (= number-generations 0)
   ; (print-population population)                           ;highest ranked member (sorted by rank?)
   ;refactor to loop - recur
@@ -250,7 +259,7 @@
   ;random points (x,y) where x is spaced out and y is random
   (let [x (get-xindex CHECK_POINTS 1 10)                    ;get (0,1,2,3,4,5,6,7,8,9)
         y (get-random CHECK_POINTS 100)                     ;get 10 random numbers
-        initial-population (get-population POPULATION)
+        initial-population (get-population POPULATION)  ; map even cause terms are out of 14 not 3
         ]
 
     ;100 is sort of a random number of generations but just as a place-holder
