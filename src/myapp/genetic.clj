@@ -19,7 +19,7 @@
 
 ;get x number of input values to map to the random output (points to check).
 (defn get-xindex [number step max]
-  (take number (range 0 max step)))
+  (take number (range 1 max step)))
 
 ;get NUMBER random values up to MAX (used for random values and random population[where x<4])
 (defn get-random [number max]
