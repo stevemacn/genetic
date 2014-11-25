@@ -150,9 +150,6 @@
         )
       )
 ;this function must be called before used of selection function each time
-(defn selected [score-population]
-  (selection score-population INDEX (fSlice score-population))
-  )
 ;((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))
 
 ;roulette wheel
