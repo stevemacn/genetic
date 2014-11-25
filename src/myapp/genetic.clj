@@ -300,12 +300,18 @@
         (empty? xs) ()
         ;term
         (== (mod (count xs) 2) 1)
-        (cond (== mutating? 1) (cons (rand-int 15) (mut (rest xs))))
+        (cond
+          (== mutating? 1) (cons (rand-int 15) (mut (rest xs)))
+          :else (cons (first xs) (mut (rest xs)))
+          )
         ;op
         (== (mod (count xs) 2) 0)
-        (cond (== mutating? 1) (cons (rand-int 4) (mut (rest xs))))
+        (cond
+          (== mutating? 1) (cons (rand-int 4) (mut (rest xs)))
+          :else (cons (first xs) (mut (rest xs)))
+          )
         )
- )
+      )
 
 ;mutating whole population, this is the function will be call after new generate
 ;with data size of 20 elements and population of 90 Elapsed time:0.062986 ms
