@@ -4,9 +4,9 @@
 ;(defn sinx [x] (Math/sin x))
 
 ;constant data
-(def POPULATION 6)
-(def MEMBERS 9)                                             ;number of term and operator combine must be odd number
-(def CHECK_POINTS 10)
+(def POPULATION 100)
+(def MEMBERS 13)                                             ;number of term and operator combine must be odd number
+(def CHECK_POINTS 20)
 (def INDEX 0)
 (def MUTRATE 234)
 
@@ -62,26 +62,30 @@
 (defn power-tco [c, a]
   (loop [b c e a]
     (cond
+      (> b 5000) b
       (= e 0) 1
       (= e 1) b
       :else (recur (* b c) (- e 1)))))
 
 ;list of possible operators
 (defn get-operand [val1 val2 ind]
+  ;(println val1 val2)
   (cond
     (= 0 ind) (* val1 val2)
     (= 1 ind) (+ val1 val2)
-    (= 2 ind) (if (zero? val2) 5000  (/ val1 val2))         ;value that won't be matched when divide by zero
+    (= 2 ind) (if (zero? val2) 5000 (/ val1 val2))          ;value that won't be matched when divide by zero
     (= 3 ind) (- val1 val2)
-    ;(= 4 ind) (power-tco val1 val2)
+    (= 4 ind) (power-tco val1 val2)
     ))
+
 
 ;combine 3 at index
 ;remove 3 items from the list and apply the operand to these terms. Use the x-value to calculate the terms.
 (defn combine-3-at-index [x xs x-value]
+  ;(println x xs)
   (let [l1 (take x xs) l2 (drop x xs)]
-    (let [term1 (last l1) term2  (second l2)]
-      (concat (butlast l1) (list (get-operand term1 term2 (first l2)))  (drop 2 l2)))))
+    (let [term1 (last l1) term2 (second l2)]
+      (concat (butlast l1) (list (get-operand term1 term2 (first l2))) (drop 2 l2)))))
 
 ;from stackoverflow
 (defn indices-of [f coll]
@@ -96,25 +100,25 @@
 ;applies the correct operand in order from the operator list.
 (defn find-apply [termop x-value operator-list]
   (if (= 0 (count operator-list)) termop
-    (if (= 1 (count termop))
-      termop
+      (if (= 1 (count termop))
+        termop
 
-      (let [operators (take-nth 2 (rest termop))]
-        (let [mindex (find-thing operators (first operator-list))]
+        (let [operators (take-nth 2 (rest termop))]
+          (let [mindex (find-thing operators (first operator-list))]
 
-          (if (nil? mindex)
-            (find-apply termop x-value (rest operator-list))
-            (find-apply (combine-3-at-index (+ (* mindex 2) 1) termop x-value) x-value operator-list)
-            )
-          ;(apply operator for all parts and call find-and apply again. )
-          )))))
+            (if (nil? mindex)
+              (find-apply termop x-value (rest operator-list))
+              (find-apply (combine-3-at-index (+ (* mindex 2) 1) termop x-value) x-value operator-list)
+              )
+            ;(apply operator for all parts and call find-and apply again. )
+            )))))
 
 ;first call (find-and-apply termop x-values '(0 2 3 1)
 ;check that it isn't an even value...
 (defn check-fitness [termop x-value]
   ;(println "termop" (map-even #(get-term x-value %) termop))
   ;calculate terms ahead of time to speed things up and make things easier
-  (first (find-apply (map-even #(get-term x-value %) termop) x-value '(0 2 3 1))) )
+  (first (find-apply (map-even #(get-term x-value %) termop) x-value '(4 0 2 3 1))))
 
 ;map (use pmap?) curried fx with population member for each x input
 (defn compute-y [termop x-values]
@@ -134,58 +138,98 @@
 
 ;correct the value from score-population
 (defn correct-fitness [x xs]
-    (println x)
-      (cond
-        ;(< 10000 x) 0                                             ;if x is greater than 100 result 0
-        (> 0 x) 0                                     ;if x is smaller than 0 result 0
-        :else (- (+ (apply max xs) 1) x)
-        )
-      )
+  ;(println x)
+  (cond
+    ;(< 10000 x) 0                                             ;if x is greater than 100 result 0
+    (> 0 x) 0                                               ;if x is smaller than 0 result 0
+    :else (- (+ (apply max xs) 1) x)
+    )
+  )
 ;total fitness, should return the sum of score-population
 (defn total-fitness [score-population]
-      (cond
-        (== (count score-population) 0) ()
-        (== (count score-population) 1) (correct-fitness (first score-population) score-population)
-        :else (+ (correct-fitness (first score-population) score-population) (total-fitness (rest score-population)))
-        )
-      )
+  (cond
+    (== (count score-population) 0) ()
+    (== (count score-population) 1) (correct-fitness (first score-population) score-population)
+    :else (+ (correct-fitness (first score-population) score-population) (total-fitness (rest score-population)))
+    )
+  )
+
+(defn NaN?
+  "Test if this number is nan"
+  [x]
+  ; Nan is the only value for which equality is false
+  (false? (== x x)))
+
 ;this function must be called before used of selection function each time
 ;((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))
 (defn fSlice [score-population]
+  (println "score pop" score-population)
+  (println "total-fit" (total-fitness score-population))
   (cond
     (== (count score-population) 0) 0
-    :else (rand-int (total-fitness score-population))
+    :else (let [fitness (rand-int (total-fitness score-population))]
+            (println "fitness slice" fitness)
+            (if (NaN? fitness) 500 fitness))
     )
   )
 ;roulette wheel
 (defn selection [score-population index slice]
-      (println "slice" slice)
-      (cond
-        (== (count score-population) 1) 0
-        (< slice 0) (- index 1)
-        :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population) score-population)))
-        )
-      )
+  (println "slice" slice)
+  (cond
+    (== (count score-population) 1) 0
+    (< slice 0) (- index 1)
+    :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population) score-population)))
+    )
+  )
+
+(defn check-inf [x]
+  (if (NaN? x)
+    9000
+    (if (Double/isInfinite x)
+      9000
+      x)
+    )
+  )
+
+(defn clean-scores [scores]
+  ;(println (map check-inf scores) )
+  (map check-inf scores))
 
 ;function
 (defn selected [score-population]
-  (selection score-population INDEX (fSlice score-population))
+  (let [clean-scores (clean-scores score-population)]
+    (selection clean-scores INDEX (fSlice clean-scores))
+    )
   )
+
+
+(defn t-select [dirty-population]
+  (let [score-population (clean-scores dirty-population) count (count dirty-population)]
+    (loop [score-population score-population best 9000 random (rand-int count) chances count current 0]
+      (if (= chances 0) current
+                        (if (< (nth score-population random) best)
+                          (recur score-population (nth score-population random) (rand-int count) (dec chances) random)
+                          (recur score-population best (rand-int count) (dec chances) current)
+                          )))
+
+    )
+  )
+
 
 ;potentially too slow to use (we can return multiple indexes?)
 (defn remove-item-by-index [x xs]
   (remove #{(nth xs x)} xs))
 
 (defn remove-index-from-list [x xs]
-    (let [x1 (+ x 1)]
-      (concat (take x xs) (drop x1 xs))))
+  (let [x1 (+ x 1)]
+    (concat (take x xs) (drop x1 xs))))
 
 (defn cross [mom dad]
   (let [half (+ (/ (count mom) 2) 1)]                       ;two more than half
     (let [m1 (take half mom) m2 (drop half mom)
           d1 (take half dad) d2 (drop half dad)]
-      (println mom dad)
-      (println "crossed" (concat d1 m2) (concat m1 d2))
+      ;(println mom dad)
+      ;(println "crossed" (concat d1 m2) (concat m1 d2))
 
       (list (concat m1 d2) (concat d1 m2)))))
 
@@ -194,11 +238,11 @@
 
 
 (defn cross-over [scored-population population]
-  (let [index (selected scored-population)]
-    (let [index2 (selected (remove-index-from-list index scored-population))]
-    (cross
-      (nth population index)
-      (nth (remove-index-from-list index population) index2)))))
+  (let [index (t-select scored-population)]
+    (let [index2 (t-select (remove-index-from-list index scored-population))]
+      (cross
+        (nth population index)
+        (nth (remove-index-from-list index population) index2)))))
 
 
 
@@ -207,8 +251,8 @@
 ;check if mutation should occur
 (def mutating?
   (cond
-    (== (rand-int 1000) MUTRATE) 1
-    :else 0    )
+    (== (rand-int 250) MUTRATE) 1
+    :else 0)
   )
 
 ;mutating a member
@@ -233,8 +277,25 @@
 ;mutating whole population, this is the function will be call after new generate
 ;with data size of 20 elements and population of 90 Elapsed time:0.062986 ms
 
+
 (defn mutate [xss]
   (map mut xss))
+
+(defn map-index [f coll n]
+  (map-indexed #(if (zero? (mod %1 n)) (f %2) %2) coll))
+
+
+
+(defn mutate2[x original]
+  (if (== (rand-int 100) 1) (add-random x 1) original ))
+
+(defn mutate2a [xss]
+  (map-even #(mutate2 2 %) (map-odd #(mutate2 12 %) xss))
+  )
+
+
+;  (map-odd #(add-random 2 %) (map-even #(add-random 13 %) (get-ones MEMBERS 3)))
+
 
 ;recursively iterates through the populations - should be a generator
 ;so given a population and goal (y) it should continue for number-generations
@@ -249,21 +310,26 @@
          scored-population (grade-population population x-values y-values)
          population population new-population '()]
 
-    (println new-population)
+    ;(println population)
+    ;(println new-population)
 
     (if (= generation 0)
       population                                            ;return max in population.
       (if (= (count new-population) POPULATION)
-        (let [mutants (mutate new-population)]
-          (recur
-            (dec generation)
-            x-values
-            y-values
-            ng
-            (grade-population mutants x-values y-values)
-            mutants
-            '()
-            ))
+        (do
+          (println (apply min scored-population))
+          (let [mutants (map mutate2a new-population)]
+            (recur
+              (dec generation)
+              x-values
+              y-values
+              ng
+              (grade-population mutants x-values y-values)
+              mutants
+              '()
+              ))
+          )
+
         ; (iterate-generation (dec ng) x-values y-values new-population)
         (recur
           generation
@@ -273,7 +339,7 @@
           scored-population
           population
           (concat (cross-over scored-population population) new-population)
-        ))))
+          ))))
   ;(if (= number-generations 0)
   ; (print-population population)                           ;highest ranked member (sorted by rank?)
   ;refactor to loop - recur
@@ -288,20 +354,70 @@
 
 (defn initialize []
   ;random points (x,y) where x is spaced out and y is random
-  (let [x (get-xindex CHECK_POINTS 2 20)                    ;get (0,1,2,3,4,5,6,7,8,9)
+  (let [x (get-xindex CHECK_POINTS 2 30)                    ;get (0,1,2,3,4,5,6,7,8,9)
         y (get-random CHECK_POINTS 100)                     ;get 10 random numbers
-        initial-population (get-population POPULATION)  ; map even cause terms are out of 14 not 3
+        initial-population (get-population POPULATION)      ; map even cause terms are out of 14 not 3
         ]
 
     ;100 is sort of a random number of generations but just as a place-holder
-    (iterate-generation 2 x y initial-population)
+    (concat (list  (first (iterate-generation 10 x y initial-population)) )(list x) (list y))
+        ))
+
+
+
+(defn insert-odd [ind]
+  (cond
+    (= 0 ind) "*"
+    (= 1 ind) "+"
+    (= 2 ind) "/"          ;value that won't be matched when divide by zero
+    (= 3 ind) "-"
+    (= 4 ind) "^"                                           ; (power-tco val1 val2)
     ))
 
+(defn insert-even [ind]
+  (cond
+    (= 0 ind) "x"                                           ;x
+    (= 1 ind) "Math.cos(x)"                               ;cosx
+    (= 2 ind) "Math.sin(x)"                                ;sinx
+    (= 3 ind) "Math.log(x)"                                ;lnx
+    (= 12 ind) "0.25"                                       ;fractional constants
+    (= 13 ind) "0.5"
+    (= 14 ind) "0.75"
+    :else (str (- ind 2))                                          ;constants (2-9) - some #{} is "contains?"
+    ))
+
+(defn print-equation [eq]
+ (map-odd #(insert-odd %) (map-even #(insert-even %) eq))
+
+  #_
+  (if (empty? eq)
+    '()
+    (let [feq (first eq)]
+      (cond
+        (= feq 0))
+
+
+      )
+    (cond
+      (= (first eq))
+
+    )
+
+    (str "")
+    )
+
+  )
+
 ;actual return statement to javascript so that we can visualize the graph
-(defn print-population [equation data-values xind]
+(defn print-population []
   ;"randomData = [{x:1,y:3},{x:2,y:7},{x:3,y:1}] function equation(x) { return cos(x)+5*x^2 }
-  (str "randomData=" data-values ";" "xind=" xind "; function equation(x) { return" "Math.cos(x)+3*x^2" "}")
-  "Math.cos(x)+3*x^2"                                       ;this is x
+  (let [data (initialize)]
+    (println (print-equation (first data)))
+    (str "ydata=[" (clojure.string/join "," (nth data 2))  "]; xdata=[" (clojure.string/join "," (second data))
+         "]; function equation(x) { return " (apply str (print-equation (first data)))  "}"))
+
+  ;(str "randomData=" data-values ";" "xind=" xind "; function equation(x) { return" "Math.cos(x)+3*x^2" "}")
+  ;"Math.cos(x)+3*x^2"                                       ;this is x
   )
 
 ;generator or all at once? we only support one user - so could be saved in memory.
