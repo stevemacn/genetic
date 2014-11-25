@@ -129,11 +129,11 @@
   (map #(sum-errors % x-values y-values) population))
 
 ;correct the value from score-population
-(defn correct-fitness [x]
+(defn correct-fitness [x xs]
   (cond
-    (< 100 x) 0                                             ;if x is greater than 100 result 0
+    ;(< 10000 x) 0                                             ;if x is greater than 100 result 0
     (> 0 x) 0                                     ;if x is smaller than 0 result 0
-    :else (- 100 x)
+    :else (- (+ (apply max xs) 1) x)
     )
   )
 
@@ -141,8 +141,8 @@
 (defn total-fitness [score-population]
   (cond
     (== (count score-population) 0) ()
-    (== (count score-population) 1) (correct-fitness (first score-population))
-    :else (+ (correct-fitness (first score-population)) (total-fitness (rest score-population)))
+    (== (count score-population) 1) (correct-fitness (first score-population) score-population)
+    :else (+ (correct-fitness (first score-population) score-population) (total-fitness (rest score-population)))
     )
   )
 
@@ -154,7 +154,7 @@
 (defn selection [score-population index slice]
   (cond
     (< slice 0) (- index 1)
-    :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population))))
+    :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population) score-population)))
     )
   )
 
