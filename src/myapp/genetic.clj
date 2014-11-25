@@ -39,8 +39,8 @@
 ;x is the size of the population
 (defn get-population [size]
   (if (= size 1)
-    (list (map-ops-terms 3 13))
-    (cons (map-ops-terms 3 13) (get-population (dec size)))
+    (list (map-ops-terms 2 13))
+    (cons (map-ops-terms 2 13) (get-population (dec size)))
     ))
 
 ;need to be able to choose actual values not just return the value!
@@ -112,6 +112,7 @@
 ;first call (find-and-apply termop x-values '(0 2 3 1)
 ;check that it isn't an even value...
 (defn check-fitness [termop x-value]
+  (println "termop" (map-even #(get-term x-value %) termop))
   ;calculate terms ahead of time to speed things up and make things easier
   (first (find-apply (map-even #(get-term x-value %) termop) x-value '(0 2 3 1))) )
 
@@ -279,7 +280,7 @@
 
 (defn initialize []
   ;random points (x,y) where x is spaced out and y is random
-  (let [x (get-xindex CHECK_POINTS 1 10)                    ;get (0,1,2,3,4,5,6,7,8,9)
+  (let [x (get-xindex CHECK_POINTS 2 20)                    ;get (0,1,2,3,4,5,6,7,8,9)
         y (get-random CHECK_POINTS 100)                     ;get 10 random numbers
         initial-population (get-population POPULATION)  ; map even cause terms are out of 14 not 3
         ]
