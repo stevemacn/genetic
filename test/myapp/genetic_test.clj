@@ -19,6 +19,8 @@
     (is (= 12  (myapp.genetic/check-fitness '(0 1 0 0 0) 3))) ;x + x * x = 12
     (is (= 12  (myapp.genetic/check-fitness '(0 0 0 1 0) 3))) ;x * x + x = 12
     (is (= 42  (myapp.genetic/check-fitness '(0 1 0 0 0) 6))) ;x + x * x = 42
+    (is (= 4.7917594692280545  (myapp.genetic/check-fitness '(6 1 11 3 7 0 4 1 3) 6))) ;3+lnx
+
     ;.57 msecs
     (time (myapp.genetic/check-fitness '(0 0 0 1 0 1 0 3 0 3 0) 6)) ;x * x + x + x - x - x= 48
 
