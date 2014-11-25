@@ -12,15 +12,15 @@
       [:link {:rel "stylesheet" :type "text/css" :href "/main.css"}]
     ]
     [:body
-      [:script (genetic/get-data)]
+      [:script (genetic/print-population)]
       [:div {:class "graphcontainer"}
        [:div {:class "graph" :id "goalGraph"}]
-       [:h1  "Goal graph"]
+       [:h3  "Goal graph"]
       ]
 
      [:div  {:class "graphcontainer"}
       [:div {:class "graph" :id "bestGraph"}]
-      [:h1  "Matched graph"]
+      [:h3 {:id "matchgraph"}  "Matched graph"]
       ]
       [:script {:src "http://d3js.org/d3.v3.min.js"}]
       [:script {:src "/linegraph.js" }]]))
