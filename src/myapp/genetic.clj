@@ -22,8 +22,11 @@
   (take number (range 0 max step)))
 
 ;get NUMBER random values up to MAX (used for random values and random population[where x<4])
-(defn get-random [number max]
+(defn get-ones [number max]
   (take number (repeatedly #(rand-int 1))))
+
+(defn get-random [number max]
+  (take number (repeatedly #(rand-int max))))
 
 (defn add-random [x y]
   (+ (rand-int x) y))
@@ -130,6 +133,7 @@
 
 ;correct the value from score-population
 (defn correct-fitness [x]
+  (println x)
   (cond
     (< 100 x) 0                                             ;if x is greater than 100 result 0
     (> 0 x) 0                                     ;if x is smaller than 0 result 0
@@ -248,6 +252,8 @@
          population population new-population '()]
 
     (println new-population)
+    (println scored-population)
+
     (if (= (count new-population) POPULATION)
       0;(iterate-generation (dec ng) x-values y-values new-population)
       (recur
