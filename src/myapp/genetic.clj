@@ -75,7 +75,7 @@
     (= 1 ind) (+ val1 val2)
     (= 2 ind) (if (zero? val2) 5000 (/ val1 val2))          ;value that won't be matched when divide by zero
     (= 3 ind) (- val1 val2)
-    (= 4 ind) (power-tco val1 val2)
+    (= 4 ind) (* val1 val2)
     ))
 
 ;combine 3 at index
