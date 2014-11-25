@@ -4,7 +4,7 @@
 ;(defn sinx [x] (Math/sin x))
 
 ;constant data
-(def POPULATION 5)
+(def POPULATION 6)
 (def MEMBERS 9)                                             ;number of term and operator combine must be odd number
 (def CHECK_POINTS 10)
 (def INDEX 0)
@@ -112,7 +112,7 @@
 ;first call (find-and-apply termop x-values '(0 2 3 1)
 ;check that it isn't an even value...
 (defn check-fitness [termop x-value]
-  (println "termop" (map-even #(get-term x-value %) termop))
+  ;(println "termop" (map-even #(get-term x-value %) termop))
   ;calculate terms ahead of time to speed things up and make things easier
   (first (find-apply (map-even #(get-term x-value %) termop) x-value '(0 2 3 1))) )
 
@@ -134,6 +134,7 @@
 
 ;correct the value from score-population
 (defn correct-fitness [x xs]
+    (println x)
       (cond
         ;(< 10000 x) 0                                             ;if x is greater than 100 result 0
         (> 0 x) 0                                     ;if x is smaller than 0 result 0
@@ -245,22 +246,34 @@
   (println y-values)
   (println population)
 
-  (loop [x-values x-values y-values y-values ng number-generations
+  (loop [generation number-generations x-values x-values y-values y-values ng number-generations
          scored-population (grade-population population x-values y-values)
          population population new-population '()]
 
     (println new-population)
-    (if (= (count new-population) POPULATION)
-      0;(iterate-generation (dec ng) x-values y-values new-population)
-      (recur
-        x-values
-        y-values
-        ng
-        scored-population
-        population
-        (concat (cross-over scored-population population) new-population)
-      )
-    ))
+
+    (if (= generation 0)
+      population                                            ;return max in population.
+      (if (= (count new-population) POPULATION)
+        (recur
+          (dec generation)
+          x-values
+          y-values
+          ng
+          (grade-population new-population x-values y-values)
+          population
+          '()
+          )
+        ; (iterate-generation (dec ng) x-values y-values new-population)
+        (recur
+          generation
+          x-values
+          y-values
+          ng
+          scored-population
+          population
+          (concat (cross-over scored-population population) new-population)
+        ))))
   ;(if (= number-generations 0)
   ; (print-population population)                           ;highest ranked member (sorted by rank?)
   ;refactor to loop - recur
@@ -281,7 +294,7 @@
         ]
 
     ;100 is sort of a random number of generations but just as a place-holder
-    (iterate-generation 100 x y initial-population)
+    (iterate-generation 2 x y initial-population)
     ))
 
 ;actual return statement to javascript so that we can visualize the graph
