@@ -243,6 +243,22 @@
   (println y-values)
   (println population)
 
+  (loop [x-values x-values y-values y-values ng number-generations
+         scored-population (grade-population population x-values y-values)
+         population population new-population '()]
+
+    (println new-population)
+    (if (= (count new-population) POPULATION)
+      0;(iterate-generation (dec ng) x-values y-values new-population)
+      (recur
+        x-values
+        y-values
+        ng
+        scored-population
+        population
+        (concat (cross-over scored-population population) new-population)
+      )
+    ))
   ;(if (= number-generations 0)
   ; (print-population population)                           ;highest ranked member (sorted by rank?)
   ;refactor to loop - recur
