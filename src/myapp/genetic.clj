@@ -97,33 +97,17 @@
 
 ;first call (find-and-apply termop x-values '(0 2 3 1)
 ;check that it isn't an even value...
-(defn find-and-apply [termop x-value]
+(defn check-fitness [termop x-value]
   ;calculate terms ahead of time to speed things up and make things easier
   (first (find-apply (map-every-nth #(get-term x-value %) termop 2) x-value '(0 2 3 1))) )
 
-;going to take a fair amount to rewrite this using TCO (should be recursing on op not final term).
-;returns the equation-calculated value of y for an x value. (needs to be fixed currently looking at array of x not 1 x)
-;not preserving order of operations.
-(defn check-fitness-rec [termop x-value]
-  (if (empty? termop)
-    0                                                       ;find a better error message
-    (let [size (count termop) rest-terms (rest termop)]
-      (if
-        (= size 1) (get-term x-value (first termop))
-                   (get-operand
-                     (get-term x-value (first termop))      ;first term
-                     (check-fitness-rec (rest rest-terms) x-value) ;second term
-                     (first rest-terms)                     ;operand
-                     )))))
-;refactor check-fitness-rec to assemble equations
-
 ;map (use pmap?) curried fx with population member for each x input
 (defn compute-y [termop x-values]
-  (map #(check-fitness-rec termop %) x-values))
+  (map #(check-fitness termop %) x-values))
 
 ;create a vector of absolute errors between each computed y and actual y
 (defn compute-errors [termop x-values y-values]
-  (map #(Math/abs %) (map - (compute-y termop x-values) y-values)))
+  (map #(max % (- %)) (map - (compute-y termop x-values) y-values)))
 
 ;returns the fitness score for the termop vector (population member)
 (defn sum-errors [termop x-values y-values]
@@ -180,8 +164,8 @@
   (let [half (+ (/ (count mom) 2) 1)]                       ;two more than half
     (let [m1 (take half mom) m2 (drop half mom)
           d1 (take half dad) d2 (drop half dad)]
-      (println "crossed1" (concat d1 m2))
-      (println "crossed2" (concat m1 d2))
+      (println mom dad)
+      (println "crossed" (concat d1 m2) (concat m1 d2))
 
       (list (concat m1 d2) (concat d1 m2)))))
 
@@ -247,6 +231,8 @@
   (println x-values)
   (println y-values)
   (println population)
+
+
 
   ;(if (= number-generations 0)
   ; (print-population population)                           ;highest ranked member (sorted by rank?)
