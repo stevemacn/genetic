@@ -23,6 +23,9 @@
 
 ;get NUMBER random values up to MAX (used for random values and random population[where x<4])
 (defn get-random [number max]
+  (take number (repeatedly #(rand-int max))))
+
+(defn get-ones [number max]
   (take number (repeatedly #(rand-int 1))))
 
 (defn add-random [x y]
@@ -30,7 +33,7 @@
 
 ;maps random numbers for terms and operands that within their ranges.
 (defn map-ops-terms [ops terms]
-  (map-odd #(add-random ops %) (map-even #(add-random terms %) (get-random MEMBERS 3))))
+  (map-odd #(add-random ops %) (map-even #(add-random terms %) (get-ones MEMBERS 3))))
 ;(map-odd #(add-random 3 %) (map-even #(add-random 13 %) (
 
 ;x is the size of the population
