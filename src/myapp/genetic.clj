@@ -262,3 +262,16 @@
     (== (rand-int 1000) MUTRATE) 1
     :else 0    )
   )
+
+;mutating a list
+(defn mut [xs]
+      (cond
+        (empty? xs) ()
+        ;term
+        (== (mod (count xs) 2) 1)
+        (cond (== mutating? 1) (cons (rand-int 15) (mut (rest xs))))
+        ;op
+        (== (mod (count xs) 2) 0)
+        (cond (== mutating? 1) (cons (rand-int 4) (mut (rest xs))))
+        )
+ )
