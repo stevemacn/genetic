@@ -32,7 +32,7 @@
     (= 0 ind) val                                           ;x
     (= 1 ind) (Math/cos val)                                ;cosx
     (= 2 ind) (Math/sin val)                                ;sinx
-    (= 3 ind) (Math/log val)                                ;logx
+    (= 3 ind) (Math/log val)                                ;lnx
     (= 12 ind) 0.25                                         ;fractional constants
     (= 13 ind) 0.5
     (= 14 ind) 0.75
@@ -52,11 +52,21 @@
   (cond
     (= 0 ind) (* val1 val2)
     (= 1 ind) (+ val1 val2)
-    (= 2 ind) (/ val1 val2)
+    (= 2 ind) (/ val1 val2)      ;value that won't be matched when divide by zero
     (= 3 ind) (- val1 val2)
     ;(= 4 ind) (power-tco val1 val2)
     ))
 
+;combine 3 at index
+;remove 3 items from the list and apply the operand to these terms. Use the x-value to calculate the terms.
+(defn combine-3-at-index [x xs x-value]
+  (println x xs x-value)
+  (let [l1 (take x xs) l2 (drop x xs)]
+    (println l1 l2)
+    (let [term1 (last l1) term2  (second l2)]
+      (println term1 term2 (first l2))
+      (println "new list" (concat (butlast l1) (list (get-operand term1 term2 (first l2)))  (drop 2 l2)))
+      (concat (butlast l1) (list (get-operand term1 term2 (first l2)))  (drop 2 l2)))))
 
 
 ;going to take a fair amount to rewrite this using TCO (should be recursing on op not final term).
