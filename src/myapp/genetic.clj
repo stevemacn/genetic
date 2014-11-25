@@ -136,51 +136,8 @@
 (defn grade-population [population x-values y-values]
   (map #(sum-errors % x-values y-values) population))
 
-;correct the value from score-population
-(defn correct-fitness [x xs]
-  ;(println x)
-  (cond
-    ;(< 10000 x) 0                                             ;if x is greater than 100 result 0
-    (> 0 x) 0                                               ;if x is smaller than 0 result 0
-    :else (- (+ (apply max xs) 1) x)
-    )
-  )
-;total fitness, should return the sum of score-population
-(defn total-fitness [score-population]
-  (cond
-    (== (count score-population) 0) ()
-    (== (count score-population) 1) (correct-fitness (first score-population) score-population)
-    :else (+ (correct-fitness (first score-population) score-population) (total-fitness (rest score-population)))
-    )
-  )
-
-(defn NaN?
-  "Test if this number is nan"
-  [x]
-  ; Nan is the only value for which equality is false
+(defn NaN? [x]
   (false? (== x x)))
-
-;this function must be called before used of selection function each time
-;((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))
-(defn fSlice [score-population]
-  (println "score pop" score-population)
-  (println "total-fit" (total-fitness score-population))
-  (cond
-    (== (count score-population) 0) 0
-    :else (let [fitness (rand-int (total-fitness score-population))]
-            (println "fitness slice" fitness)
-            (if (NaN? fitness) 500 fitness))
-    )
-  )
-;roulette wheel
-(defn selection [score-population index slice]
-  (println "slice" slice)
-  (cond
-    (== (count score-population) 1) 0
-    (< slice 0) (- index 1)
-    :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population) score-population)))
-    )
-  )
 
 (defn check-inf [x]
   (if (NaN? x)
@@ -192,16 +149,7 @@
   )
 
 (defn clean-scores [scores]
-  ;(println (map check-inf scores) )
   (map check-inf scores))
-
-;function
-(defn selected [score-population]
-  (let [clean-scores (clean-scores score-population)]
-    (selection clean-scores INDEX (fSlice clean-scores))
-    )
-  )
-
 
 (defn t-select [dirty-population]
   (let [score-population (clean-scores dirty-population) count (count dirty-population)]
