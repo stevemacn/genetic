@@ -129,34 +129,32 @@
   (map #(sum-errors % x-values y-values) population))
 
 ;correct the value from score-population
-(defn correct-fitness [x]
-  (cond
-    (< 100 x) 0                                             ;if x is greater than 100 result 0
-    (> 0 x) 0                                     ;if x is smaller than 0 result 0
-    :else (- 100 x)
-    )
-  )
-
+(defn correct-fitness [x xs]
+      (cond
+        ;(< 10000 x) 0                                             ;if x is greater than 100 result 0
+        (> 0 x) 0                                     ;if x is smaller than 0 result 0
+        :else (- (+ (apply max xs) 1) x)
+        )
+      )
 ;total fitness, should return the sum of score-population
 (defn total-fitness [score-population]
-  (cond
-    (== (count score-population) 0) ()
-    (== (count score-population) 1) (correct-fitness (first score-population))
-    :else (+ (correct-fitness (first score-population)) (total-fitness (rest score-population)))
-    )
-  )
-
+      (cond
+        (== (count score-population) 0) ()
+        (== (count score-population) 1) (correct-fitness (first score-population) score-population)
+        :else (+ (correct-fitness (first score-population) score-population) (total-fitness (rest score-population)))
+        )
+      )
 ;this function must be called before used of selection function each time
 ;(def fSlice (rand-int (total-fitness score-population)))
 ;((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))
 
 ;roulette wheel
 (defn selection [score-population index slice]
-  (cond
-    (< slice 0) (- index 1)
-    :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population))))
-    )
-  )
+      (cond
+        (< slice 0) (- index 1)
+        :else (selection (rest score-population) (+ index 1) (- slice (correct-fitness (first score-population) score-population)))
+        )
+      )
 
 ;function
 (defn selected [score-population]
