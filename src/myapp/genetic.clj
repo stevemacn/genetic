@@ -78,7 +78,6 @@
     (= 4 ind) (power-tco val1 val2)
     ))
 
-
 ;combine 3 at index
 ;remove 3 items from the list and apply the operand to these terms. Use the x-value to calculate the terms.
 (defn combine-3-at-index [x xs x-value]
@@ -116,7 +115,6 @@
 ;first call (find-and-apply termop x-values '(0 2 3 1)
 ;check that it isn't an even value...
 (defn check-fitness [termop x-value]
-  ;(println "termop" (map-even #(get-term x-value %) termop))
   ;calculate terms ahead of time to speed things up and make things easier
   (first (find-apply (map-even #(get-term x-value %) termop) x-value '(4 0 2 3 1))))
 
@@ -144,9 +142,7 @@
     9000
     (if (Double/isInfinite x)
       9000
-      x)
-    )
-  )
+      x)))
 
 (defn clean-scores [scores]
   (map check-inf scores))
@@ -154,14 +150,12 @@
 (defn t-select [dirty-population]
   (let [score-population (clean-scores dirty-population) count (count dirty-population)]
     (loop [score-population score-population best 9000 random (rand-int count) chances count current 0]
-      (if (= chances 0) current
-                        (if (< (nth score-population random) best)
-                          (recur score-population (nth score-population random) (rand-int count) (dec chances) random)
-                          (recur score-population best (rand-int count) (dec chances) current)
-                          )))
-
-    )
-  )
+      (if (= chances 0)
+        current
+        (if (< (nth score-population random) best)
+          (recur score-population (nth score-population random) (rand-int count) (dec chances) random)
+          (recur score-population best (rand-int count) (dec chances) current)
+          )))))
 
 
 ;potentially too slow to use (we can return multiple indexes?)
@@ -176,15 +170,9 @@
   (let [half (+ (/ (count mom) 2) 1)]                       ;two more than half
     (let [m1 (take half mom) m2 (drop half mom)
           d1 (take half dad) d2 (drop half dad)]
-      ;(println mom dad)
-      ;(println "crossed" (concat d1 m2) (concat m1 d2))
-
       (list (concat m1 d2) (concat d1 m2)))))
 
-;create new generation from parents
-;may want to investigate multiple types of crossover (single point, multiple point, uniform)
-
-
+;single section cross over other options are (single point, multiple point, uniform)
 (defn cross-over [scored-population population]
   (let [index (t-select scored-population)]
     (let [index2 (t-select (remove-index-from-list index scored-population))]
@@ -192,47 +180,8 @@
         (nth population index)
         (nth (remove-index-from-list index population) index2)))))
 
-
-
-
-
-;check if mutation should occur
-(def mutating?
-  (cond
-    (== (rand-int 250) MUTRATE) 1
-    :else 0)
-  )
-
-;mutating a member
-(defn mut [xs]
-  (cond
-    (empty? xs) ()
-    ;term
-    (== (mod (count xs) 2) 1)
-    (cond
-      (== mutating? 1) (cons (rand-int 13) (mut (rest xs)))
-      :else (cons (first xs) (mut (rest xs)))
-      )
-    ;op
-    (== (mod (count xs) 2) 0)
-    (cond
-      (== mutating? 1) (cons (rand-int 3) (mut (rest xs)))
-      :else (cons (first xs) (mut (rest xs)))
-      )
-    )
-  )
-
-;mutating whole population, this is the function will be call after new generate
-;with data size of 20 elements and population of 90 Elapsed time:0.062986 ms
-
-
-(defn mutate [xss]
-  (map mut xss))
-
 (defn map-index [f coll n]
   (map-indexed #(if (zero? (mod %1 n)) (f %2) %2) coll))
-
-
 
 (defn mutate2[x original]
   (if (== (rand-int 100) 1) (add-random x 1) original ))
