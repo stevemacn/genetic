@@ -8,29 +8,34 @@
 
 (deftest test-fitness
   (testing "Composition of equations"
-    (println (myapp.genetic/check-fitness-rec '(0 1 0) 1))
-    (myapp.genetic/check-fitness-rec '(0 1 0) 1)
 
-    (is (= 1   (myapp.genetic/check-fitness-rec '(0 2 0) 1) ));x / x = 1
-    (is (= 1   (myapp.genetic/check-fitness-rec '(0 2 0) 2))) ;x / x = 1
-    (is (= 4   (myapp.genetic/check-fitness-rec '(0 1 0) 2))) ;x + x = 4
-    (is (= 6   (myapp.genetic/check-fitness-rec '(0 1 0 1 0) 2))) ;x + x + x = 6
-    (is (= 9   (myapp.genetic/check-fitness-rec '(0 1 0 1 0) 3))) ;x + x + x = 9
-    (is (= 4   (myapp.genetic/check-fitness-rec '(0 1 0 2 0) 3))) ;x + x / x = 4
-    (is (= 12  (myapp.genetic/check-fitness-rec '(0 1 0 0 0) 3))) ;x + x * x = 12
-    (is (= 12  (myapp.genetic/check-fitness-rec '(0 0 0 1 0) 3))) ;x * x + x = 12
+    ;'(0 2 3 1) denotes the operator precedences
+    (is (= 1   (myapp.genetic/check-fitness '(0 2 0) 1)));x / x = 1
+    (is (= 1   (myapp.genetic/check-fitness '(0 2 0) 2))) ;x / x = 1
+    (is (= 4   (myapp.genetic/check-fitness '(0 1 0) 2))) ;x + x = 4
+    (is (= 6   (myapp.genetic/check-fitness '(0 1 0 1 0) 2))) ;x + x + x = 6
+    (is (= 9   (myapp.genetic/check-fitness '(0 1 0 1 0) 3))) ;x + x + x = 9
+    (is (= 4   (myapp.genetic/check-fitness '(0 1 0 2 0) 3))) ;x + x / x = 4
+    (is (= 12  (myapp.genetic/check-fitness '(0 1 0 0 0) 3))) ;x + x * x = 12
+    (is (= 12  (myapp.genetic/check-fitness '(0 0 0 1 0) 3))) ;x * x + x = 12
+    (is (= 42  (myapp.genetic/check-fitness '(0 1 0 0 0) 6))) ;x + x * x = 42
+    ;.57 msecs
+    (time (myapp.genetic/check-fitness '(0 0 0 1 0 1 0 3 0 3 0) 6)) ;x * x + x + x - x - x= 48
 
-    (is (= 2.6327476856711183  (myapp.genetic/check-fitness-rec '(1 1 1 1 1) 0.5))) ;cosx + cosx + cosx = 2.63
+    (is (= 36  (myapp.genetic/check-fitness '(0 0 0 1 0 1 0 3 0 3 0) 6))) ;x * x + x + x - x - x= 48
 
-    (is (= 0.8775825618903728  (myapp.genetic/check-fitness-rec '(1) 0.5))) ; cosx = 0.878
-    (is (= 0.5  (myapp.genetic/check-fitness-rec '(13) 0.5))) ; 0.5
-    (is (= 0.4387912809451864  (myapp.genetic/check-fitness-rec '(13 0 1) 0.5))) ; 0.5 * cosx = 2.63
-    (is (= 2.6327476856711183  (myapp.genetic/check-fitness-rec '(5 0 1) 0.5))) ;3 * cosx = 2.63
+    (is (= 2.6327476856711183  (myapp.genetic/check-fitness '(1 1 1 1 1) 0.5))) ;cosx + cosx + cosx = 2.63
+
+    (is (= 0.8775825618903728  (myapp.genetic/check-fitness '(1) 0.5))) ; cosx = 0.878
+    (is (= 0.5  (myapp.genetic/check-fitness '(13) 0.5))) ; 0.5
+    (is (= 0.4387912809451864  (myapp.genetic/check-fitness '(13 0 1) 0.5))) ; 0.5 * cosx = 2.63
+    (is (= 2.6327476856711183  (myapp.genetic/check-fitness '(5 0 1) 0.5))) ;3 * cosx = 2.63
   ))
 
 (deftest test-computed-y-values
   (testing "Comute y-values"
     (is (= '(3 6 9 12 15 18) (myapp.genetic/compute-y '(0 1 0 1 0) '(1 2 3 4 5 6))))
+    (is (= '(5 5 5 5 5 5) (myapp.genetic/compute-y '(0 1 7 3 0) '(1 2 3 4 5 6))))
     (is (= '(3 15 30 45 60 75) (myapp.genetic/compute-y '(0 1 0 1 0) '(1 5 10 15 20 25))))
   ))
 
@@ -40,7 +45,10 @@
     (is (= '(0 0 2 1 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18)))) ;+2 +1
     (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
     (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
+    (is (= '(2 4 6 7 10 12) (myapp.genetic/compute-errors '(0 1 0 3 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;;x+x-x = x so then
+    (is (= '(3 3/2 13/3 23/4 9 67/6) (myapp.genetic/compute-errors '(0 1 7 2 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ; =x+4*x = 5x
   ))
+
 
 ;sums the test-map-errors to receive fitness score (0 is best)
 (deftest test-member-error-score
@@ -49,6 +57,8 @@
     (is (= 3 (myapp.genetic/sum-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18))))
     (is (= 1 (myapp.genetic/sum-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
     (is (= 1 (myapp.genetic/sum-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
+    (is (= 41 (myapp.genetic/sum-errors '(0 1 0 3 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
+    (is (= 139/4 (myapp.genetic/sum-errors '(0 1 7 2 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
 
     ;x+x*x = x^2+x
     (is (= 0 (myapp.genetic/sum-errors '(0 1 0 0 0) '(1 2 3 4 5 6) '(2 6 12 20 30 42))))
@@ -125,7 +135,9 @@
     ;0 2 0 0 0
     ;t 0 t 0 t
     ;0 0 0 2 0
-    (let [population '((0 1 0 0 0) (0 1 0 1 0) (0 0 0 1 0)) xvals '(1 2 3 4 5 6) yvals '(3 6 11 13 15 18)]
+    ;x+x*x x+x+x x*x+x
+    ;still fails cause grade pop relies on broken get fit blah blah.
+    (let [population '((0 1 0 0 0) (0 1 0 1 0) (0 1 7 2 0) (0 0 0 1 0) (1 1 0 1 1)) xvals '(1 2 3 4 5 6) yvals '(3 6 11 13 15 18)]
       (println (myapp.genetic/grade-population population xvals yvals))
       (println (myapp.genetic/cross-over (myapp.genetic/grade-population population xvals yvals) population))
       (myapp.genetic/cross-over (myapp.genetic/grade-population population xvals yvals) population)
@@ -134,10 +146,10 @@
 
 (deftest test-remove-3
   (testing "removing three from list applying operator and continue"
-
-    (is (= 4 (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 2))) ;2+2
-    (is (= 2 (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 1))) ;1+1
-    (is (= 2 (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 1))) ;
+       ;fix tests they fail because they no longer calculate terms. No rush - this is covered by other tests now.
+    (is (= '(0 1 4 1 3 0) (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 2))) ;x+x = 2+2
+    (is (= '(0 1 2 1 3 0) (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 1))) ;x+x = 1+1
+    (is (= '(0 1 0 1 2.6931471805599454 0) (myapp.genetic/combine-3-at-index 5 '(0 1 0 1 0 1 3 0) 2))) ;x+logx = 2+log2
     ))
 
 (end-to-end)
