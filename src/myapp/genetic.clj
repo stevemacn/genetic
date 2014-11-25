@@ -151,7 +151,8 @@
       )
 ;this function must be called before used of selection function each time
 ;((fn [fSlice] (rand-int fSlice)) (total-fitness score-population))
-
+(defn fSlice [score-population]
+  (rand-int (total-fitness score-population)))
 ;roulette wheel
 (defn selection [score-population index slice]
       (println "slice" slice)
