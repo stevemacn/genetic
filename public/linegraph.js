@@ -1,18 +1,27 @@
-y = []
-data = []
-for (i in input) data.push({
-    "x": input[i],
-    "y": Math.random()
+
+data=[]
+
+for (i in xdata) data.push({
+    "x": xdata[i],
+    "y": ydata[i]
 });
 
+data2=[]
+for (i in xdata) data2.push({
+    "x": xdata[i],
+    "y": equation(xdata[i])
+})
+
+d3.select("#matchgraph").html("Matched Graph <br/>"+equation)
+
 console.log(data)
+console.log(data2)
 
 makeGraph(500,400,"#goalGraph", data)
-makeGraph(500,400,"#bestGraph", data)
-
+makeGraph(500,400,"#bestGraph", data2)
 
 //make reusable for components
-function makeGraph(w, h, canvas) {
+function makeGraph(w, h, canvas, data) {
 
     //based on mike bostock's simple example 
     margin = 30
