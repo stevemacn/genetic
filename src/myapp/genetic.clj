@@ -294,7 +294,7 @@
     :else 0    )
   )
 
-;mutating a list
+;mutating a member
 (defn mut [xs]
       (cond
         (empty? xs) ()
@@ -306,3 +306,11 @@
         (cond (== mutating? 1) (cons (rand-int 4) (mut (rest xs))))
         )
  )
+
+;mutating whole population, this is the function will be call after new generate
+;with data size of 20 elements and population of 90 Elapsed time:0.062986 ms
+
+(defn mutation [xss]
+      (map mut xss)
+      )
+
