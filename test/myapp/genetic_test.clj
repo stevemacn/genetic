@@ -38,18 +38,28 @@
   (testing "Comute y-values"
     (is (= '(3 6 9 12 15 18) (myapp.genetic/compute-y '(0 1 0 1 0) '(1 2 3 4 5 6))))
     (is (= '(5 5 5 5 5 5) (myapp.genetic/compute-y '(0 1 7 3 0) '(1 2 3 4 5 6))))
+    (is (= '(5 5 5 5 5 5) (myapp.genetic/compute-y '(0 1 7 2 0) '(1 2 3 4 5 6))))
     (is (= '(3 15 30 45 60 75) (myapp.genetic/compute-y '(0 1 0 1 0) '(1 5 10 15 20 25))))
   ))
 
 (deftest test-map-errors
   (testing "Determining errors between computed y and actual y"
+    (println
+      (myapp.genetic/print-equation '(0 1 7 2 0))           ;x + 5 / x =
+      (myapp.genetic/print-equation '(1 0 3 0 0 0 9 0 2))   ;cos * log * x * 7 * sin
+      (myapp.genetic/print-equation '(11 1 8 0 2 1 3 1 4))  ;9 + 6 * sin + log + 2
+      )
+
     (is (= '(0 0 0 0 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 12 15 18))))
     (is (= '(0 0 2 1 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 11 13 15 18)))) ;+2 +1
     (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 13 15 18)))) ;+1
     (is (= '(0 0 0 1 0 0) (myapp.genetic/compute-errors '(0 1 0 1 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;-1 (test abs)
     (is (= '(2 4 6 7 10 12) (myapp.genetic/compute-errors '(0 1 0 3 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ;;x+x-x = x so then
     (is (= '(3 3/2 13/3 23/4 9 67/6) (myapp.genetic/compute-errors '(0 1 7 2 0) '(1 2 3 4 5 6) '(3 6 9 11 15 18)))) ; =x+4*x = 5x
-  ))
+    (is (= '(3 3/2 13/3 23/4 9 67/6) (myapp.genetic/compute-errors '(1 0 3 0 0 0 9 0 2) '(0 2 4 6 8 10 12 14 16 18) '(91 6 71 63 94 42 62 83 13 96)))) ; =x+4*x = 5x
+    (is (= '(3 3/2 13/3 23/4 9 67/6) (myapp.genetic/compute-errors '(11 1 8 0 2 1 3 1 4) '(0 2 4 6 8 10 12 14 16 18) '(91 6 71 63 94 42 62 83 13 96)))) ; =x+4*x = 5x
+
+    ))
 
 
 ;sums the test-map-errors to receive fitness score (0 is best)
@@ -103,7 +113,8 @@
     (println
     (is (=
           '((0 (0 1 0)) (3 (1 0 1)) (22 (2 1 3)))
-          (myapp.genetic/sort-population-tuples '(0 22 3) '((0 1 0) (2 1 3) (1 0 1))))))))
+          ; (myapp.genetic/sort-population-tuples '(0 22 3) '((0 1 0) (2 1 3) (1 0 1)))
+          )))))
 
 #_
 (deftest test-remove-item
@@ -146,15 +157,49 @@
     )
     ))
 
+
+(deftest test-my-select
+  (testing "selection"
+    (println
+        (frequencies
+          (dotimes [n 1000] (println (myapp.genetic/t-select '(21 31 55 7 8 9 15 62)) ))
+          )
+        )
+
+    (println (myapp.genetic/t-select '(21 31 55 7 8 9 15 62)))))
+
+
 (deftest test-remove-3
   (testing "removing three from list applying operator and continue"
        ;fix tests they fail because they no longer calculate terms. No rush - this is covered by other tests now.
-    (is (= '(0 1 4 1 3 0) (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 2))) ;x+x = 2+2
-    (is (= '(0 1 2 1 3 0) (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3 0) 1))) ;x+x = 1+1
-    (is (= '(0 1 0 1 2.6931471805599454 0) (myapp.genetic/combine-3-at-index 5 '(0 1 0 1 0 1 3 0) 2))) ;x+logx = 2+log2
+    (is (= '(0 1 4 1 3) (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3) 2))) ;x+x = 2+2
+    (is (= '(0 1 2 1 3) (myapp.genetic/combine-3-at-index 3 '(0 1 0 1 0 1 3) 1))) ;x+x = 1+1
+    (is (= '(0 1 0 1 2.6931471805599454 0) (myapp.genetic/combine-3-at-index 5 '(0 1 0 1 0 1 3) 2))) ;x+logx = 2+log2
     ))
 
-(end-to-end)
+(deftest test-print-eqt (testing "prints correct equation in javascript")
+
+
+                        ;'(6 1 11 3 7 0 4 1 3)
+                        (println (myapp.genetic/print-equation '(6 1 11 3 7 0 4 1 3))) ;3+log(x)
+
+                        (println (myapp.genetic/print-equation '(0 1 0 0 0)))
+
+                        )
+
+
+(deftest test-print-solution (testing "full e2e testing for javascript generation")
+                             ; (println (myapp.genetic/print-population))
+
+                             )
+
+
+(deftest test-mutate (testing "test the mutate"
+     (println (map myapp.genetic/mutate2a '((1 1 1 1 1 1 1) (1 1 1 1 1 1 1) (1 1 1 1 1 1 1) (1 1 1 1 1 1 1) )))
+  ))
+
+
+;(end-to-end)
 (test-fitness)
 (test-computed-y-values)
 (test-map-errors)
@@ -165,4 +210,8 @@
 (test-cross)
 (test-crossover)
 (test-remove-3)
+;(test-my-select)
 ;(estimate-time)
+(test-print-eqt)
+(test-print-solution)
+(test-mutate)
