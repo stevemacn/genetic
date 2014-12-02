@@ -17,11 +17,11 @@ d3.select("#matchgraph").html("Matched Graph <br/>"+equation)
 console.log(data)
 console.log(data2)
 
-makeGraph(500,400,"#goalGraph", data)
+makeGraph(500,400,"#goalGraph", data, data2)
 makeGraph(500,400,"#bestGraph", data2)
 
 //make reusable for components
-function makeGraph(w, h, canvas, data) {
+function makeGraph(w, h, canvas, data, data2) {
 
     //based on mike bostock's simple example 
     margin = 30
@@ -82,6 +82,14 @@ function makeGraph(w, h, canvas, data) {
         .attr("stroke", "steelblue")
         .attr("stroke-width", 2)
         .attr("fill", "none");
+
+    if (data2)
+    svg.append("path")
+        .attr("d", line(data2))
+        .attr("stroke", "firebrick")
+        .attr("stroke-width", 2)
+        .attr("fill", "none");
+
 
     //function sigmoid(t) { with (Math) { return 1 / (1 + exp(-2*t)); } }
     //chart.cartesian(sigmoid, [-5, 5, 100]);
