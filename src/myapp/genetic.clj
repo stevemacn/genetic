@@ -55,6 +55,13 @@
     (= 12 ind) 0.25                                         ;fractional constants
     (= 13 ind) 0.5
     (= 14 ind) 0.75
+    (= 10 ind) 0.25                                       ;fractional constants
+    (= 11 ind) 0.5
+    (= 12 ind) 0.75
+    (= 13 ind) (* val val)
+    (= 14 ind) (* val val)
+    (= 15 ind) (* val val val)
+    (= 16 ind) (* val val val)
     :else (- ind 2)                                         ;constants (2-9) - some #{} is "contains?"
     ))
 
@@ -183,10 +190,10 @@
   (map-indexed #(if (zero? (mod %1 n)) (f %2) %2) coll))
 
 (defn mutate2[x original]
-  (if (== (rand-int 100) 1) (add-random x 1) original ))
+  (if (== (rand-int 20) 1) (add-random x 1) original ))
 
 (defn mutate2a [xss]
-  (map-even #(mutate2 2 %) (map-odd #(mutate2 12 %) xss)))
+  (map-odd #(mutate2 2 %) (map-even #(mutate2 14 %) xss)))
 
 ;@number-generations - the number of times to recurse
 (defn iterate-generation [number-generations x-values y-values population]
@@ -244,7 +251,7 @@
     (= 1 ind) "+"
     (= 2 ind) "/"          ;value that won't be matched when divide by zero
     (= 3 ind) "-"
-    (= 4 ind) "^"                                           ; (power-tco val1 val2)
+    (= 4 ind) "*"                                           ; (power-tco val1 val2)
     ))
 
 (defn insert-even [ind]
@@ -253,13 +260,18 @@
     (= 1 ind) "Math.cos(x)"                               ;cosx
     (= 2 ind) "Math.sin(x)"                                ;sinx
     (= 3 ind) "Math.log(x)"                                ;lnx
-    (= 12 ind) "0.25"                                       ;fractional constants
-    (= 13 ind) "0.5"
-    (= 14 ind) "0.75"
+    (= 10 ind) "0.25"                                       ;fractional constants
+    (= 11 ind) "0.5"
+    (= 12 ind) "0.75"
+    (= 13 ind) "x^2"
+    (= 14 ind) "x^2"
+    (= 15 ind) "x^3"
+    (= 16 ind) "x^3"
     :else (str (- ind 2))                                          ;constants (2-9) - some #{} is "contains?"
     ))
 
 (defn print-equation [eq]
+  (println eq)
  (map-odd #(insert-odd %) (map-even #(insert-even %) eq)))
 
 ;actual return statement to javascript so that we can visualize the graph
