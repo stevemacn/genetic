@@ -1,11 +1,13 @@
 ##Genetic algorithm
 
-In this project we generate random points to a plot line graph consisting of 
-these points. We use a genetic algorithm to approximate the equation for these 
-points. 
+Curve fitting is a well researched problem. There are few approaches that use 
+genetic algorithms for curve fitting. We try a new approach to curve fitting 
+where we don't focus on performance but rather try to create "real" equations.
+This differs from the traditional approach, where parameters of a harmonic function
+are varied to produce a specific curve. 
 
-The display is written in D3 and javascript but the server and genetic algorithm 
-are written entirely in clojure.
+The visualization is written in D3 and javascript; however, the server and genetic
+algorithm are written entirely in clojure. 
 
 ##Examples 
 
